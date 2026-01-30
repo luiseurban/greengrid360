@@ -8,8 +8,8 @@
 </head>
 <body>
     <div class="container">
-        <h1>Mediciones Ambientales</h1>
-        <p class="subtitle">GreenGrid 360</p>
+        <h1>GreenGrid 360</h1>
+        <p class="subtitle">Mediciones Ambientales</p>
         
         <?php if (!empty($mediciones)): ?>
             <table class="data-table" border="1">

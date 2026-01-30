@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #4F9E53 0%, #3D7A41 100%);
     min-height: 100vh;
     padding: 20px;
 }
@@ -42,7 +42,7 @@ h1 {
 }
 
 .data-table thead {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #4F9E53 0%, #3D7A41 100%);
     color: white;
 }
 
@@ -96,7 +96,7 @@ h1 {
 
 .error-message a {
     display: inline-block;
-    background-color: #721c24;
+    background-color: #4F9E53;
     color: white;
     padding: 10px 20px;
     border-radius: 5px;
@@ -105,5 +105,5 @@ h1 {
 }
 
 .error-message a:hover {
-    background-color: #5a1419;
+    background-color: #3D7A41;
 }

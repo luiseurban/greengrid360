@@ -1,7 +1,11 @@
 <?php
 // Punto de entrada de la aplicación
-require_once(__DIR__ . '/../conexion.php');
+require_once(__DIR__ . '/../app/database/Database.php');
 require_once(__DIR__ . '/../app/controller/MedicionController.php');
+
+// Crear instancia de la base de datos
+$db = new Database();
+$conexion = $db->getConexion();
 
 // Crear instancia del controlador
 $controlador = new MedicionController($conexion);
@@ -39,5 +43,6 @@ try {
     require(__DIR__ . '/../app/view/error.php');
 }
 
-$conexion->close();
+$db->cerrar();
 ?>
+

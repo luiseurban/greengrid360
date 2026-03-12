@@ -8,6 +8,11 @@
 </head>
 <body>
     <div class="container">
+        <div class="top-bar">
+            <p>Sesion: <?php echo htmlspecialchars($_SESSION['usuario']['nombre'] ?? ''); ?></p>
+            <a class="logout-link" href="index.php?accion=logout">Cerrar sesion</a>
+        </div>
+
         <h1>GreenGrid 360</h1>
         <p class="subtitle">Mediciones Ambientales</p>
         

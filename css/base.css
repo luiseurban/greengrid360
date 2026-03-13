@@ -1,0 +1,118 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #eef2f6;
+    --panel: #ffffff;
+    --panel-border: #d6dde6;
+    --text: #1f2933;
+    --muted: #5b6775;
+    --primary: #245b44;
+    --primary-dark: #1d4b38;
+    --link: #1f5f9c;
+    --table-head: #edf1f5;
+    --table-line: #d5dbe3;
+}
+
+body {
+    font-family: "Trebuchet MS", "Segoe UI", sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    padding: 20px;
+    color: var(--text);
+}
+
+.container {
+    max-width: 1080px;
+    margin: 0 auto;
+    background: var(--panel);
+    border-radius: 12px;
+    border: 1px solid var(--panel-border);
+    box-shadow: 0 8px 24px rgba(13, 32, 52, 0.06);
+    padding: 28px;
+}
+
+h1 {
+    color: #22313f;
+    margin-bottom: 8px;
+    font-size: 2rem;
+    line-height: 1.15;
+}
+
+.subtitle {
+    color: var(--muted);
+    margin-bottom: 18px;
+    font-size: 0.98rem;
+}
+
+.brand-tag {
+    display: inline-flex;
+    align-items: center;
+    min-height: 28px;
+    padding: 0 10px;
+    border-radius: 999px;
+    border: 1px solid #c9d6e5;
+    background: #f4f8fc;
+    color: #2f4a66;
+    font-size: 13px;
+    margin-bottom: 10px;
+}
+
+.message {
+    text-align: center;
+    padding: 32px;
+    color: #5a6674;
+    font-size: 1rem;
+    border: 1px dashed #cdd6e1;
+    border-radius: 10px;
+    background: #fafcfe;
+}
+
+.error-message {
+    background-color: #fdecec;
+    border: 1px solid #f4c7c7;
+    color: #7d1f1f;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+    text-align: center;
+}
+
+.error-message h2 {
+    margin-bottom: 15px;
+    color: #7d1f1f;
+}
+
+.error-message p {
+    margin-bottom: 20px;
+}
+
+.error-message a {
+    display: inline-block;
+    background-color: var(--primary);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+}
+
+.error-message a:hover {
+    background-color: var(--primary-dark);
+}
+
+@media (max-width: 640px) {
+    body {
+        padding: 12px;
+    }
+
+    .container {
+        padding: 16px;
+    }
+
+    h1 {
+        font-size: 1.6rem;
+    }
+}

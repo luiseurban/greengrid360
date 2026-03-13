@@ -1,0 +1,122 @@
+@import url("base.css");
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 18px;
+    border-bottom: 1px solid #e4e9ef;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+}
+
+.top-bar {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    align-items: center;
+    font-size: 14px;
+    color: var(--muted);
+}
+
+.logout-link {
+    color: var(--link);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.logout-link:hover {
+    text-decoration: underline;
+}
+
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.stat-card {
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    background: #f9fbfd;
+    padding: 12px 14px;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 6px;
+}
+
+.stat-value {
+    font-size: 22px;
+    line-height: 1.2;
+    font-weight: 700;
+    color: #21313f;
+}
+
+.stat-date {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--table-line);
+    border-radius: 10px;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.data-table thead {
+    background: var(--table-head);
+    color: #1f2933;
+}
+
+.data-table th {
+    padding: 12px;
+    text-align: left;
+    font-weight: 600;
+    border-bottom: 1px solid var(--table-line);
+    white-space: nowrap;
+}
+
+.data-table td {
+    padding: 11px 12px;
+    border-bottom: 1px solid var(--table-line);
+    color: #333;
+    white-space: nowrap;
+}
+
+.data-table tbody tr:hover {
+    background-color: #f3f7fb;
+}
+
+.data-table tbody tr:nth-child(even) {
+    background-color: #fbfcfd;
+}
+
+.data-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+@media (max-width: 640px) {
+    .panel-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .top-bar {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .stats-row {
+        grid-template-columns: 1fr;
+    }
+}

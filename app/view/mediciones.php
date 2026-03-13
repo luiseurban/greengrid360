@@ -86,6 +86,63 @@
                 </div>
             </form>
         </section>
+
+        <?php if (!empty($datosGrafica['svg'])): ?>
+            <section class="chart-panel">
+                <h2>Tendencia de mediciones</h2>
+                <div class="chart-legend">
+                    <span class="legend-item"><i class="legend-dot temp"></i>Temperatura (C)</span>
+                    <span class="legend-item"><i class="legend-dot hum"></i>Humedad (%)</span>
+                    <span class="legend-item"><i class="legend-dot air"></i>Calidad del aire (PPM)</span>
+                </div>
+                <div class="chart-container">
+                    <svg
+                        class="trend-chart"
+                        viewBox="0 0 <?php echo (int) $datosGrafica['svg']['width']; ?> <?php echo (int) $datosGrafica['svg']['height']; ?>"
+                        role="img"
+                        aria-label="Grafica de tendencia de temperatura, humedad y calidad del aire"
+                    >
+                        <?php foreach ($datosGrafica['svg']['grid'] as $linea): ?>
+                            <line
+                                x1="<?php echo (float) $datosGrafica['svg']['left']; ?>"
+                                y1="<?php echo htmlspecialchars((string) $linea['y']); ?>"
+                                x2="<?php echo (float) $datosGrafica['svg']['plot_right']; ?>"
+                                y2="<?php echo htmlspecialchars((string) $linea['y']); ?>"
+                                class="grid-line"
+                            />
+                            <text x="16" y="<?php echo ((float) $linea['y']) + 4; ?>" class="axis-label">
+                                <?php echo htmlspecialchars($linea['left_label']); ?>
+                            </text>
+                            <text x="<?php echo (float) $datosGrafica['svg']['plot_right'] + 8; ?>" y="<?php echo ((float) $linea['y']) + 4; ?>" class="axis-label axis-right">
+                                <?php echo htmlspecialchars($linea['right_label']); ?>
+                            </text>
+                        <?php endforeach; ?>
+
+                        <?php foreach ($datosGrafica['svg']['x_labels'] as $xLabel): ?>
+                            <text x="<?php echo htmlspecialchars((string) $xLabel['x']); ?>" y="<?php echo (float) $datosGrafica['svg']['plot_bottom'] + 24; ?>" class="axis-label axis-x">
+                                <?php echo htmlspecialchars($xLabel['label']); ?>
+                            </text>
+                        <?php endforeach; ?>
+
+                        <polyline points="<?php echo htmlspecialchars($datosGrafica['svg']['series']['temperatura']['line']); ?>" class="line-temp" />
+                        <polyline points="<?php echo htmlspecialchars($datosGrafica['svg']['series']['humedad']['line']); ?>" class="line-hum" />
+                        <polyline points="<?php echo htmlspecialchars($datosGrafica['svg']['series']['aire']['line']); ?>" class="line-air" />
+
+                        <?php foreach ($datosGrafica['svg']['series']['temperatura']['points'] as $punto): ?>
+                            <circle cx="<?php echo htmlspecialchars((string) $punto['x']); ?>" cy="<?php echo htmlspecialchars((string) $punto['y']); ?>" r="3" class="dot-temp" />
+                        <?php endforeach; ?>
+
+                        <?php foreach ($datosGrafica['svg']['series']['humedad']['points'] as $punto): ?>
+                            <circle cx="<?php echo htmlspecialchars((string) $punto['x']); ?>" cy="<?php echo htmlspecialchars((string) $punto['y']); ?>" r="3" class="dot-hum" />
+                        <?php endforeach; ?>
+
+                        <?php foreach ($datosGrafica['svg']['series']['aire']['points'] as $punto): ?>
+                            <circle cx="<?php echo htmlspecialchars((string) $punto['x']); ?>" cy="<?php echo htmlspecialchars((string) $punto['y']); ?>" r="3" class="dot-air" />
+                        <?php endforeach; ?>
+                    </svg>
+                </div>
+            </section>
+        <?php endif; ?>
         
         <?php if (!empty($mediciones)): ?>
             <div class="table-wrapper">
@@ -116,5 +173,6 @@
             </div>
         <?php endif; ?>
     </div>
+
 </body>
 </html>

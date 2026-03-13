@@ -35,6 +35,57 @@
                 <p class="stat-value stat-date"><?php echo htmlspecialchars($ultimaActualizacion); ?></p>
             </article>
         </section>
+
+        <section class="filters-panel">
+            <form method="GET" action="index.php" class="filters-form">
+                <input type="hidden" name="accion" value="listar">
+
+                <div class="filter-group">
+                    <label for="fecha_desde">Fecha desde</label>
+                    <input type="date" id="fecha_desde" name="fecha_desde" value="<?php echo htmlspecialchars($filtros['fecha_desde'] ?? ''); ?>">
+                </div>
+
+                <div class="filter-group">
+                    <label for="fecha_hasta">Fecha hasta</label>
+                    <input type="date" id="fecha_hasta" name="fecha_hasta" value="<?php echo htmlspecialchars($filtros['fecha_hasta'] ?? ''); ?>">
+                </div>
+
+                <div class="filter-group">
+                    <label for="temperatura_min">Temp. min (°C)</label>
+                    <input type="number" step="0.1" id="temperatura_min" name="temperatura_min" value="<?php echo htmlspecialchars((string) ($filtros['temperatura_min'] ?? '')); ?>">
+                </div>
+
+                <div class="filter-group">
+                    <label for="temperatura_max">Temp. max (°C)</label>
+                    <input type="number" step="0.1" id="temperatura_max" name="temperatura_max" value="<?php echo htmlspecialchars((string) ($filtros['temperatura_max'] ?? '')); ?>">
+                </div>
+
+                <div class="filter-group">
+                    <label for="humedad_min">Humedad min (%)</label>
+                    <input type="number" step="0.1" id="humedad_min" name="humedad_min" value="<?php echo htmlspecialchars((string) ($filtros['humedad_min'] ?? '')); ?>">
+                </div>
+
+                <div class="filter-group">
+                    <label for="humedad_max">Humedad max (%)</label>
+                    <input type="number" step="0.1" id="humedad_max" name="humedad_max" value="<?php echo htmlspecialchars((string) ($filtros['humedad_max'] ?? '')); ?>">
+                </div>
+
+                <div class="filter-group">
+                    <label for="calidad_aire_min">Aire min (PPM)</label>
+                    <input type="number" step="1" id="calidad_aire_min" name="calidad_aire_min" value="<?php echo htmlspecialchars((string) ($filtros['calidad_aire_min'] ?? '')); ?>">
+                </div>
+
+                <div class="filter-group">
+                    <label for="calidad_aire_max">Aire max (PPM)</label>
+                    <input type="number" step="1" id="calidad_aire_max" name="calidad_aire_max" value="<?php echo htmlspecialchars((string) ($filtros['calidad_aire_max'] ?? '')); ?>">
+                </div>
+
+                <div class="filters-actions">
+                    <button type="submit" class="btn-filter">Aplicar filtros</button>
+                    <a class="btn-clear" href="index.php?accion=listar">Limpiar</a>
+                </div>
+            </form>
+        </section>
         
         <?php if (!empty($mediciones)): ?>
             <div class="table-wrapper">

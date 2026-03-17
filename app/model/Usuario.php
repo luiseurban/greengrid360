@@ -1,52 +1,67 @@
 <?php
 
 class Usuario {
-    public function __construct() {
-        if (!isset($_SESSION['usuarios_locales']) || !is_array($_SESSION['usuarios_locales'])) {
-            $_SESSION['usuarios_locales'] = [];
-        }
+    private $conexion;
 
-        // Usuario base para pruebas locales en localhost.
-        if (empty($_SESSION['usuarios_locales'])) {
-            $_SESSION['usuarios_locales'][] = [
-                'nombre' => 'Administrador',
-                'correo' => 'admin@localhost',
-                'password_hash' => password_hash('admin123', PASSWORD_DEFAULT),
-                'creado_en' => date('Y-m-d H:i:s')
-            ];
-        }
+    public function __construct($conexion) {
+        $this->conexion = $conexion;
     }
 
     public function registrar($nombre, $correo, $password) {
-        foreach ($_SESSION['usuarios_locales'] as $usuario) {
-            if (strcasecmp($usuario['correo'], $correo) === 0) {
-                return false;
-            }
+        $sqlExiste = "SELECT id_usuario FROM usuarios WHERE LOWER(correo) = LOWER(?) LIMIT 1";
+        $stmtExiste = $this->conexion->prepare($sqlExiste);
+
+        if (!$stmtExiste) {
+            return false;
         }
 
-        $_SESSION['usuarios_locales'][] = [
-            'nombre' => $nombre,
-            'correo' => $correo,
-            'password_hash' => password_hash($password, PASSWORD_DEFAULT),
-            'creado_en' => date('Y-m-d H:i:s')
-        ];
+        $stmtExiste->bind_param("s", $correo);
+        $stmtExiste->execute();
+        $resultadoExiste = $stmtExiste->get_result();
 
-        // Futuro: reemplazar almacenamiento en sesion por insercion en tabla `usuarios`.
-        return true;
+        if ($resultadoExiste && $resultadoExiste->num_rows > 0) {
+            return false;
+        }
+
+        $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+
+        $sqlInsertar = "INSERT INTO usuarios (nombre, correo, `contraseña`, fecha_registro) VALUES (?, ?, ?, NOW())";
+        $stmtInsertar = $this->conexion->prepare($sqlInsertar);
+
+        if (!$stmtInsertar) {
+            return false;
+        }
+
+        $stmtInsertar->bind_param("sss", $nombre, $correo, $passwordHash);
+
+        return $stmtInsertar->execute();
     }
 
     public function autenticar($correo, $password) {
-        foreach ($_SESSION['usuarios_locales'] as $usuario) {
-            if (strcasecmp($usuario['correo'], $correo) === 0 && password_verify($password, $usuario['password_hash'])) {
-                return [
-                    'nombre' => $usuario['nombre'],
-                    'correo' => $usuario['correo']
-                ];
-            }
+        $sql = "SELECT nombre, correo, `contraseña` FROM usuarios WHERE LOWER(correo) = LOWER(?) LIMIT 1";
+        $stmt = $this->conexion->prepare($sql);
+
+        if (!$stmt) {
+            return null;
         }
 
-        // Futuro: autenticar contra tabla `usuarios` en base de datos.
-        return null;
+        $stmt->bind_param("s", $correo);
+        $stmt->execute();
+        $resultado = $stmt->get_result();
+        $usuario = $resultado ? $resultado->fetch_assoc() : null;
+
+        if (!$usuario) {
+            return null;
+        }
+
+        if (!password_verify($password, $usuario['contraseña'])) {
+            return null;
+        }
+
+        return [
+            'nombre' => $usuario['nombre'],
+            'correo' => $usuario['correo']
+        ];
     }
 }
 ?>

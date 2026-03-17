@@ -5,12 +5,17 @@ require_once(__DIR__ . '/../app/database/Database.php');
 require_once(__DIR__ . '/../app/controller/MedicionController.php');
 require_once(__DIR__ . '/../app/controller/AuthController.php');
 
-$auth = new AuthController();
-$accion = $_GET['accion'] ?? ($auth->yaAutenticado() ? 'listar' : 'login');
+$accion = null;
 $id = $_GET['id'] ?? null;
 $db = null;
+$conexion = null;
 
 try {
+    $db = new Database();
+    $conexion = $db->getConexion();
+    $auth = new AuthController($conexion);
+    $accion = $_GET['accion'] ?? ($auth->yaAutenticado() ? 'listar' : 'login');
+
     switch ($accion) {
         case 'login':
             if ($auth->yaAutenticado()) {
@@ -55,8 +60,6 @@ try {
         case 'crear':
             $auth->requireAuth();
 
-            $db = new Database();
-            $conexion = $db->getConexion();
             $controlador = new MedicionController($conexion);
 
             if ($accion === 'listar') {

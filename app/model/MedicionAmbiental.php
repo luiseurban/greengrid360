@@ -26,30 +26,6 @@ class MedicionAmbiental {
             $condiciones[] = "DATE(fecha_hora) <= '" . $fechaHasta . "'";
         }
 
-        if (isset($filtros['temperatura_min']) && $filtros['temperatura_min'] !== null) {
-            $condiciones[] = "temperatura >= " . (float) $filtros['temperatura_min'];
-        }
-
-        if (isset($filtros['temperatura_max']) && $filtros['temperatura_max'] !== null) {
-            $condiciones[] = "temperatura <= " . (float) $filtros['temperatura_max'];
-        }
-
-        if (isset($filtros['humedad_min']) && $filtros['humedad_min'] !== null) {
-            $condiciones[] = "humedad >= " . (float) $filtros['humedad_min'];
-        }
-
-        if (isset($filtros['humedad_max']) && $filtros['humedad_max'] !== null) {
-            $condiciones[] = "humedad <= " . (float) $filtros['humedad_max'];
-        }
-
-        if (isset($filtros['calidad_aire_min']) && $filtros['calidad_aire_min'] !== null) {
-            $condiciones[] = "calidad_aire >= " . (float) $filtros['calidad_aire_min'];
-        }
-
-        if (isset($filtros['calidad_aire_max']) && $filtros['calidad_aire_max'] !== null) {
-            $condiciones[] = "calidad_aire <= " . (float) $filtros['calidad_aire_max'];
-        }
-
         if (!empty($condiciones)) {
             $sql .= " WHERE " . implode(" AND ", $condiciones);
         }

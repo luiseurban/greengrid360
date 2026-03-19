@@ -5,7 +5,7 @@
     justify-content: space-between;
     align-items: flex-start;
     gap: 18px;
-    border-bottom: 1px solid #e4e9ef;
+    border-bottom: 1px solid #eed8e5;
     margin-bottom: 20px;
     padding-bottom: 14px;
 }
@@ -38,8 +38,8 @@
 
 .filters-panel {
     border: 1px solid var(--panel-border);
-    border-radius: 10px;
-    background: #f9fbfd;
+    border-radius: 12px;
+    background: #fff7fc;
     padding: 14px;
     margin-bottom: 18px;
 }
@@ -59,16 +59,23 @@
 .filter-group label {
     font-size: 13px;
     font-weight: 600;
-    color: #354353;
+    color: #715667;
 }
 
 .filter-group input {
     height: 38px;
-    border: 1px solid #c7d2de;
-    border-radius: 8px;
+    border: 1px solid #e6c8da;
+    border-radius: 10px;
     padding: 0 10px;
     font-size: 14px;
     background: #fff;
+    color: #4c3545;
+}
+
+.filter-group input:focus {
+    outline: none;
+    border-color: #c974a8;
+    box-shadow: 0 0 0 3px rgba(185, 79, 138, 0.16);
 }
 
 .filters-actions {
@@ -82,7 +89,7 @@
 .btn-filter,
 .btn-clear {
     height: 38px;
-    border-radius: 8px;
+    border-radius: 10px;
     padding: 0 14px;
     font-size: 14px;
     font-weight: 600;
@@ -104,19 +111,19 @@
 }
 
 .btn-clear {
-    border: 1px solid #b9c6d5;
+    border: 1px solid #e2bfd3;
     background: #fff;
-    color: #30475f;
+    color: #7b4c6c;
 }
 
 .btn-clear:hover {
-    background: #f2f6fa;
+    background: #fff2f9;
 }
 
 .stat-card {
     border: 1px solid var(--panel-border);
-    border-radius: 10px;
-    background: #f9fbfd;
+    border-radius: 12px;
+    background: #fff7fc;
     padding: 12px 14px;
 }
 
@@ -130,7 +137,7 @@
     font-size: 22px;
     line-height: 1.2;
     font-weight: 700;
-    color: #21313f;
+    color: #5d2f4d;
 }
 
 .stat-date {
@@ -142,7 +149,7 @@
     width: 100%;
     overflow-x: auto;
     border: 1px solid var(--table-line);
-    border-radius: 10px;
+    border-radius: 12px;
 }
 
 .data-table {
@@ -152,7 +159,7 @@
 
 .data-table thead {
     background: var(--table-head);
-    color: #1f2933;
+    color: #4f3447;
 }
 
 .data-table th {
@@ -166,16 +173,16 @@
 .data-table td {
     padding: 11px 12px;
     border-bottom: 1px solid var(--table-line);
-    color: #333;
+    color: #4b3a45;
     white-space: nowrap;
 }
 
 .data-table tbody tr:hover {
-    background-color: #f3f7fb;
+    background-color: #fff0f8;
 }
 
 .data-table tbody tr:nth-child(even) {
-    background-color: #fbfcfd;
+    background-color: #fffafd;
 }
 
 .data-table tbody tr:last-child td {

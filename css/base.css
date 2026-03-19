@@ -5,21 +5,21 @@
 }
 
 :root {
-    --bg: #eef2f6;
+    --bg: #fff4fb;
     --panel: #ffffff;
-    --panel-border: #d6dde6;
-    --text: #1f2933;
-    --muted: #5b6775;
-    --primary: #245b44;
-    --primary-dark: #1d4b38;
-    --link: #1f5f9c;
-    --table-head: #edf1f5;
-    --table-line: #d5dbe3;
+    --panel-border: #efd7e5;
+    --text: #3b2a36;
+    --muted: #7b5f72;
+    --primary: #b94f8a;
+    --primary-dark: #9e3f74;
+    --link: #a04a9b;
+    --table-head: #fceef6;
+    --table-line: #efd8e6;
 }
 
 body {
     font-family: "Trebuchet MS", "Segoe UI", sans-serif;
-    background: var(--bg);
+    background: linear-gradient(180deg, #fff8fd 0%, var(--bg) 100%);
     min-height: 100vh;
     padding: 20px;
     color: var(--text);
@@ -29,14 +29,14 @@ body {
     max-width: 1080px;
     margin: 0 auto;
     background: var(--panel);
-    border-radius: 12px;
+    border-radius: 16px;
     border: 1px solid var(--panel-border);
-    box-shadow: 0 8px 24px rgba(13, 32, 52, 0.06);
+    box-shadow: 0 10px 28px rgba(166, 82, 135, 0.12);
     padding: 28px;
 }
 
 h1 {
-    color: #22313f;
+    color: #5e2d4d;
     margin-bottom: 8px;
     font-size: 2rem;
     line-height: 1.15;
@@ -54,9 +54,9 @@ h1 {
     min-height: 28px;
     padding: 0 10px;
     border-radius: 999px;
-    border: 1px solid #c9d6e5;
-    background: #f4f8fc;
-    color: #2f4a66;
+    border: 1px solid #e8c5dc;
+    background: #fff0f8;
+    color: #914e76;
     font-size: 13px;
     margin-bottom: 10px;
 }
@@ -64,17 +64,17 @@ h1 {
 .message {
     text-align: center;
     padding: 32px;
-    color: #5a6674;
+    color: #765f72;
     font-size: 1rem;
-    border: 1px dashed #cdd6e1;
+    border: 1px dashed #e6c8da;
     border-radius: 10px;
-    background: #fafcfe;
+    background: #fff9fd;
 }
 
 .error-message {
-    background-color: #fdecec;
-    border: 1px solid #f4c7c7;
-    color: #7d1f1f;
+    background-color: #fff0f4;
+    border: 1px solid #f1c8d8;
+    color: #7c2e50;
     padding: 20px;
     border-radius: 8px;
     margin: 20px 0;
@@ -83,7 +83,7 @@ h1 {
 
 .error-message h2 {
     margin-bottom: 15px;
-    color: #7d1f1f;
+    color: #7c2e50;
 }
 
 .error-message p {

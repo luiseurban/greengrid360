@@ -113,9 +113,6 @@ Responsabilidades:
 Filtros soportados:
 - `fecha_desde`
 - `fecha_hasta`
-- `temperatura_min`, `temperatura_max`
-- `humedad_min`, `humedad_max`
-- `calidad_aire_min`, `calidad_aire_max`
 
 ### 6) `app/model/MedicionAmbiental.php`
 Responsabilidades:

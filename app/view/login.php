@@ -34,7 +34,6 @@
             </form>
 
             <p class="auth-link">No tienes cuenta? <a href="index.php?accion=registro">Registrate</a></p>
-            <p class="auth-note">Demo local: admin@localhost / admin123</p>
         </div>
     </div>
 </body>

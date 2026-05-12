@@ -66,6 +66,7 @@
                             <th>Temperatura (°C)</th>
                             <th>Humedad (%)</th>
                             <th>Calidad del Aire (PPM)</th>
+                            <th>Movimiento detectado</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -75,6 +76,7 @@
                                 <td><?php echo htmlspecialchars($fila['temperatura']); ?></td>
                                 <td><?php echo htmlspecialchars($fila['humedad']); ?></td>
                                 <td><?php echo htmlspecialchars($fila['calidad_aire']); ?></td>
+                                <td><?php echo htmlspecialchars($fila['fecha_hora_movimiento']); ?></td>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>

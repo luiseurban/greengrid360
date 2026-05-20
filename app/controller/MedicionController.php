@@ -67,8 +67,8 @@ class MedicionController {
     /**
      * Procesa la inserción de una nueva medición
      */
-    public function crear($temperatura, $humedad, $calidad_aire) {
-        if ($this->modelo->insertar($temperatura, $humedad, $calidad_aire)) {
+    public function crear($temperatura, $humedad, $calidad_aire, $fecha_hora_movimiento) {
+        if ($this->modelo->insertar($temperatura, $humedad, $calidad_aire, $fecha_hora_movimiento)) {
             header("Location: index.php");
             exit;
         } else {

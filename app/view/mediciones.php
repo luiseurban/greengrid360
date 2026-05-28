@@ -32,8 +32,8 @@ $filtrosQ = http_build_query(array_filter([
             <a href="index.php?accion=listar" class="sidebar-link <?php echo $currentAction === 'listar' ? 'active' : ''; ?>">
                 Mediciones
             </a>
-            <a href="index.php?accion=registro" class="sidebar-link <?php echo $currentAction === 'registro' ? 'active' : ''; ?>">
-                Registro
+            <a href="index.php?accion=dispositivos" class="sidebar-link">
+                Dispositivos
             </a>
             <a href="index.php?accion=home" class="sidebar-link">
                 Inicio
@@ -77,7 +77,31 @@ $filtrosQ = http_build_query(array_filter([
 
             <section class="toolbar">
                 <h2 class="section-title">Registros</h2>
-                <button class="btn-create" id="btnCreate" onclick="abrirModalCrear()">+ Crear Medicion</button>
+                <div class="toolbar-actions">
+                    <form method="GET" action="index.php" class="search-form" id="searchForm">
+                        <input type="hidden" name="accion" value="listar">
+                        <?php if (!empty($filtros['fecha_desde'])): ?>
+                            <input type="hidden" name="fecha_desde" value="<?php echo htmlspecialchars($filtros['fecha_desde']); ?>">
+                        <?php endif; ?>
+                        <?php if (!empty($filtros['fecha_hasta'])): ?>
+                            <input type="hidden" name="fecha_hasta" value="<?php echo htmlspecialchars($filtros['fecha_hasta']); ?>">
+                        <?php endif; ?>
+                        <?php if (!empty($filtros['id_dispositivo'])): ?>
+                            <input type="hidden" name="id_dispositivo" value="<?php echo htmlspecialchars($filtros['id_dispositivo']); ?>">
+                        <?php endif; ?>
+                        <input type="text" name="buscar" class="search-input" placeholder="Buscar mediciones..." value="<?php echo htmlspecialchars($filtros['buscar'] ?? ''); ?>" oninput="buscarEnTiempoReal(this)">
+                        <?php if (!empty($filtros['buscar'])): ?>
+                            <?php
+                                $clearParams = ['accion' => 'listar'];
+                                if (!empty($filtros['fecha_desde'])) $clearParams['fecha_desde'] = $filtros['fecha_desde'];
+                                if (!empty($filtros['fecha_hasta'])) $clearParams['fecha_hasta'] = $filtros['fecha_hasta'];
+                                if (!empty($filtros['id_dispositivo'])) $clearParams['id_dispositivo'] = $filtros['id_dispositivo'];
+                            ?>
+                            <a href="index.php?<?php echo http_build_query($clearParams); ?>" class="btn-clear-search">Limpiar</a>
+                        <?php endif; ?>
+                    </form>
+                    <button class="btn-create" id="btnCreate" onclick="abrirModalCrear()">+ Crear Medicion</button>
+                </div>
             </section>
 
             <section class="filters-panel">
@@ -212,6 +236,7 @@ $filtrosQ = http_build_query(array_filter([
                 <input type="hidden" name="filtro_fecha_desde" value="<?php echo htmlspecialchars($filtros['fecha_desde'] ?? ''); ?>">
                 <input type="hidden" name="filtro_fecha_hasta" value="<?php echo htmlspecialchars($filtros['fecha_hasta'] ?? ''); ?>">
                 <input type="hidden" name="filtro_id_dispositivo" value="<?php echo htmlspecialchars($filtros['id_dispositivo'] ?? ''); ?>">
+                <input type="hidden" name="filtro_buscar" value="<?php echo htmlspecialchars($filtros['buscar'] ?? ''); ?>">
                 <input type="hidden" name="pagina" value="<?php echo $pagina; ?>">
 
                 <div class="modal-body">
@@ -265,10 +290,20 @@ $filtrosQ = http_build_query(array_filter([
         <input type="hidden" name="filtro_fecha_desde" value="<?php echo htmlspecialchars($filtros['fecha_desde'] ?? ''); ?>">
         <input type="hidden" name="filtro_fecha_hasta" value="<?php echo htmlspecialchars($filtros['fecha_hasta'] ?? ''); ?>">
         <input type="hidden" name="filtro_id_dispositivo" value="<?php echo htmlspecialchars($filtros['id_dispositivo'] ?? ''); ?>">
+        <input type="hidden" name="filtro_buscar" value="<?php echo htmlspecialchars($filtros['buscar'] ?? ''); ?>">
         <input type="hidden" name="pagina" value="<?php echo $pagina; ?>">
     </form>
 
 <script>
+var searchTimer = null;
+
+function buscarEnTiempoReal(input) {
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(function() {
+        input.form.submit();
+    }, 350);
+}
+
 function abrirModalCrear() {
     document.getElementById('modalTitle').textContent = 'Crear Medicion';
     document.getElementById('modalForm').action = 'index.php?accion=crear';

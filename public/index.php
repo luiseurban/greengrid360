@@ -3,6 +3,7 @@ session_start();
 
 require_once(__DIR__ . '/../app/database/Database.php');
 require_once(__DIR__ . '/../app/controller/MedicionController.php');
+require_once(__DIR__ . '/../app/controller/Esp32Controller.php');
 require_once(__DIR__ . '/../app/controller/AuthController.php');
 
 $accion = null;
@@ -85,6 +86,28 @@ try {
                 $controlador->eliminar();
             } else {
                 header('Location: index.php?accion=listar');
+                exit;
+            }
+            break;
+
+        case 'dispositivos':
+        case 'crear-dispositivo':
+        case 'editar-dispositivo':
+        case 'eliminar-dispositivo':
+            $auth->requireAuth();
+
+            $controladorEsp = new Esp32Controller($conexion);
+
+            if ($accion === 'dispositivos') {
+                $controladorEsp->listar();
+            } elseif ($accion === 'crear-dispositivo' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+                $controladorEsp->crear();
+            } elseif ($accion === 'editar-dispositivo' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+                $controladorEsp->actualizar();
+            } elseif ($accion === 'eliminar-dispositivo' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+                $controladorEsp->eliminar();
+            } else {
+                header('Location: index.php?accion=dispositivos');
                 exit;
             }
             break;

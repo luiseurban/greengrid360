@@ -34,7 +34,8 @@ class MedicionController {
         $filtros = [
             'fecha_desde' => null,
             'fecha_hasta' => null,
-            'id_dispositivo' => null
+            'id_dispositivo' => null,
+            'buscar' => null
         ];
 
         if (!empty($_GET['fecha_desde']) && $this->esFechaValida($_GET['fecha_desde'])) {
@@ -47,6 +48,10 @@ class MedicionController {
 
         if (!empty($_GET['id_dispositivo']) && ctype_digit($_GET['id_dispositivo'])) {
             $filtros['id_dispositivo'] = (int) $_GET['id_dispositivo'];
+        }
+
+        if (!empty($_GET['buscar'])) {
+            $filtros['buscar'] = trim($_GET['buscar']);
         }
 
         return $filtros;
@@ -190,6 +195,7 @@ class MedicionController {
         $filtroFechaDesde = $_POST['filtro_fecha_desde'] ?? $_GET['fecha_desde'] ?? '';
         $filtroFechaHasta = $_POST['filtro_fecha_hasta'] ?? $_GET['fecha_hasta'] ?? '';
         $filtroIdDispositivo = $_POST['filtro_id_dispositivo'] ?? $_GET['id_dispositivo'] ?? '';
+        $filtroBuscar = $_POST['filtro_buscar'] ?? $_GET['buscar'] ?? '';
         $pagina = $_POST['pagina'] ?? $_GET['pagina'] ?? '';
 
         if ($filtroFechaDesde !== '') {
@@ -200,6 +206,9 @@ class MedicionController {
         }
         if ($filtroIdDispositivo !== '') {
             $params['id_dispositivo'] = $filtroIdDispositivo;
+        }
+        if ($filtroBuscar !== '') {
+            $params['buscar'] = $filtroBuscar;
         }
         if ($pagina !== '') {
             $params['pagina'] = $pagina;

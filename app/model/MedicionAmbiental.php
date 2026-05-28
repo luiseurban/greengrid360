@@ -25,6 +25,11 @@ class MedicionAmbiental {
             $condiciones[] = "m.id_dispositivo = " . $idDispositivo;
         }
 
+        if (!empty($filtros['buscar'])) {
+            $buscar = '%' . $this->conexion->real_escape_string($filtros['buscar']) . '%';
+            $condiciones[] = "(e.ubicacion LIKE '$buscar' OR CAST(m.temperatura AS CHAR) LIKE '$buscar' OR CAST(m.humedad AS CHAR) LIKE '$buscar' OR CAST(m.humedad_suelo AS CHAR) LIKE '$buscar' OR CAST(m.calidad_aire AS CHAR) LIKE '$buscar' OR CAST(m.lluvia AS CHAR) LIKE '$buscar')";
+        }
+
         return $condiciones;
     }
 
@@ -57,7 +62,7 @@ class MedicionAmbiental {
     }
 
     public function contarMediciones($filtros = []) {
-        $sql = "SELECT COUNT(*) as total FROM medicion_ambiental m";
+        $sql = "SELECT COUNT(*) as total FROM medicion_ambiental m LEFT JOIN esp32 e ON m.id_dispositivo = e.id_dispositivo";
 
         $condiciones = $this->construirCondiciones($filtros);
 

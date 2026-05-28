@@ -57,7 +57,7 @@ $has_session = isset($_SESSION['usuario']);
 
             <div class="hero-visual">
                 <div class="image-frame image-frame-large">
-                    <span>Imagen principal pendiente</span>
+                    <img src="img/principal.jpg" alt="GreenGrid 360">
                 </div>
             </div>
         </section>
@@ -121,8 +121,12 @@ $has_session = isset($_SESSION['usuario']);
             </div>
 
             <div class="blank-gallery">
-                <div class="image-frame image-frame-medium">Imagen secundaria pendiente</div>
-                <div class="image-frame image-frame-small">Imagen de soporte pendiente</div>
+                <div class="image-frame image-frame-medium">
+                    <img src="img/secundaria.jpg" alt="Arquitectura GreenGrid 360">
+                </div>
+                <div class="image-frame image-frame-small">
+                    <img src="img/soporte.png" alt="Soporte visual GreenGrid 360">
+                </div>
             </div>
         </section>
 

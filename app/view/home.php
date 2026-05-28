@@ -10,7 +10,6 @@
     <header class="landing-header">
         <div class="landing-brand">
             <span class="brand-mark">GreenGrid 360</span>
-            <span class="brand-subtitle">Tecnologia sostenible para Yumbo</span>
         </div>
 
         <nav class="landing-nav" aria-label="Navegacion principal">
@@ -35,8 +34,8 @@
                 </p>
 
                 <div class="hero-actions">
-                    <a class="btn btn-primary" href="index.php?accion=listar">Ver datos en base de datos</a>
-                    <a class="btn btn-secondary" href="index.php?accion=login">Iniciar sesion</a>
+                    <a class="btn btn-primary" href="index.php?accion=listar">Dashboard</a>
+                    <a class="btn btn-secondary" href="index.php?accion=login">Manual de usuario</a>
                 </div>
 
                 <div class="hero-notes">
@@ -136,13 +135,16 @@
                     el sistema te pedira autenticarte primero.
                 </p>
             </div>
-            <a class="btn btn-primary btn-large" href="index.php?accion=listar">Abrir panel de mediciones</a>
+            <a class="btn btn-primary btn-large" href="index.php?accion=listar">Abrir Dashboard</a>
         </section>
     </main>
 
     <footer class="landing-footer">
         <p>GreenGrid 360 - Monitoreo ambiental y tecnologia sostenible para espacios verdes.</p>
-        <a href="index.php?accion=login">Acceso al sistema</a>
+        <div class="footer-right">
+            <a href="index.php?accion=login">Acceso al sistema</a>
+            <span class="copyright">&copy; 2026 GreenGrid 360. Todos los derechos reservados.</span>
+        </div>
     </footer>
 </body>
 </html>

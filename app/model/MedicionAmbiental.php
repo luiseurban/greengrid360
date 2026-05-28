@@ -30,6 +30,23 @@ class MedicionAmbiental {
             $condiciones[] = "(e.ubicacion LIKE '$buscar' OR CAST(m.temperatura AS CHAR) LIKE '$buscar' OR CAST(m.humedad AS CHAR) LIKE '$buscar' OR CAST(m.humedad_suelo AS CHAR) LIKE '$buscar' OR CAST(m.calidad_aire AS CHAR) LIKE '$buscar' OR CAST(m.lluvia AS CHAR) LIKE '$buscar')";
         }
 
+        $rangos = [
+            'temperatura' => 'm.temperatura',
+            'humedad' => 'm.humedad',
+            'humedad_suelo' => 'm.humedad_suelo',
+            'calidad_aire' => 'm.calidad_aire',
+            'lluvia' => 'm.lluvia',
+        ];
+
+        foreach ($rangos as $campo => $columna) {
+            if (isset($filtros[$campo . '_min']) && $filtros[$campo . '_min'] !== '') {
+                $condiciones[] = $columna . " >= " . (float)$filtros[$campo . '_min'];
+            }
+            if (isset($filtros[$campo . '_max']) && $filtros[$campo . '_max'] !== '') {
+                $condiciones[] = $columna . " <= " . (float)$filtros[$campo . '_max'];
+            }
+        }
+
         return $condiciones;
     }
 

@@ -35,7 +35,12 @@ class MedicionController {
             'fecha_desde' => null,
             'fecha_hasta' => null,
             'id_dispositivo' => null,
-            'buscar' => null
+            'buscar' => null,
+            'temperatura_min' => null, 'temperatura_max' => null,
+            'humedad_min' => null, 'humedad_max' => null,
+            'humedad_suelo_min' => null, 'humedad_suelo_max' => null,
+            'calidad_aire_min' => null, 'calidad_aire_max' => null,
+            'lluvia_min' => null, 'lluvia_max' => null,
         ];
 
         if (!empty($_GET['fecha_desde']) && $this->esFechaValida($_GET['fecha_desde'])) {
@@ -52,6 +57,16 @@ class MedicionController {
 
         if (!empty($_GET['buscar'])) {
             $filtros['buscar'] = trim($_GET['buscar']);
+        }
+
+        $rangos = ['temperatura', 'humedad', 'humedad_suelo', 'calidad_aire', 'lluvia'];
+        foreach ($rangos as $r) {
+            if (isset($_GET[$r . '_min']) && $_GET[$r . '_min'] !== '') {
+                $filtros[$r . '_min'] = (float) $_GET[$r . '_min'];
+            }
+            if (isset($_GET[$r . '_max']) && $_GET[$r . '_max'] !== '') {
+                $filtros[$r . '_max'] = (float) $_GET[$r . '_max'];
+            }
         }
 
         return $filtros;
@@ -191,25 +206,21 @@ class MedicionController {
 
     private function redirectToListar() {
         $params = [];
+        $filtroKeys = ['fecha_desde', 'fecha_hasta', 'id_dispositivo', 'buscar',
+                       'temperatura_min', 'temperatura_max',
+                       'humedad_min', 'humedad_max',
+                       'humedad_suelo_min', 'humedad_suelo_max',
+                       'calidad_aire_min', 'calidad_aire_max',
+                       'lluvia_min', 'lluvia_max'];
 
-        $filtroFechaDesde = $_POST['filtro_fecha_desde'] ?? $_GET['fecha_desde'] ?? '';
-        $filtroFechaHasta = $_POST['filtro_fecha_hasta'] ?? $_GET['fecha_hasta'] ?? '';
-        $filtroIdDispositivo = $_POST['filtro_id_dispositivo'] ?? $_GET['id_dispositivo'] ?? '';
-        $filtroBuscar = $_POST['filtro_buscar'] ?? $_GET['buscar'] ?? '';
+        foreach ($filtroKeys as $key) {
+            $valor = $_POST['filtro_' . $key] ?? $_GET[$key] ?? '';
+            if ($valor !== '') {
+                $params[$key] = $valor;
+            }
+        }
+
         $pagina = $_POST['pagina'] ?? $_GET['pagina'] ?? '';
-
-        if ($filtroFechaDesde !== '') {
-            $params['fecha_desde'] = $filtroFechaDesde;
-        }
-        if ($filtroFechaHasta !== '') {
-            $params['fecha_hasta'] = $filtroFechaHasta;
-        }
-        if ($filtroIdDispositivo !== '') {
-            $params['id_dispositivo'] = $filtroIdDispositivo;
-        }
-        if ($filtroBuscar !== '') {
-            $params['buscar'] = $filtroBuscar;
-        }
         if ($pagina !== '') {
             $params['pagina'] = $pagina;
         }

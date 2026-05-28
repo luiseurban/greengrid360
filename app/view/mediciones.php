@@ -130,6 +130,38 @@ $filtrosQ = http_build_query(array_filter([
                         </select>
                     </div>
 
+                    <?php
+                    $rangosChips = [
+                        'temperatura' => 'Temperatura',
+                        'humedad' => 'Humedad',
+                        'humedad_suelo' => 'Hum. Suelo',
+                        'calidad_aire' => 'Calidad Aire',
+                        'lluvia' => 'Lluvia',
+                    ];
+                    foreach ($rangosChips as $key => $label):
+                        $vmin = $filtros[$key . '_min'] ?? '';
+                        $vmax = $filtros[$key . '_max'] ?? '';
+                        if ($vmin === '' && $vmax === '') continue;
+
+                        $urlParams = $_GET;
+                        unset($urlParams[$key . '_min'], $urlParams[$key . '_max']);
+                        $urlParams['accion'] = 'listar';
+                        $removeUrl = 'index.php?' . http_build_query($urlParams);
+                    ?>
+                        <div class="filter-group">
+                            <label><?php echo $label; ?></label>
+                            <div class="filter-chip">
+                                <span class="chip-text"><?php echo ($vmin !== '' ? $vmin : '···'); ?> &ndash; <?php echo ($vmax !== '' ? $vmax : '···'); ?></span>
+                                <a href="<?php echo $removeUrl; ?>" class="chip-remove" title="Quitar filtro">&times;</a>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+
+                    <div class="filter-group filter-group-action">
+                        <label>&nbsp;</label>
+                        <button type="button" class="btn-more-filters" onclick="abrirFiltrosAvanzados()">Mas filtros</button>
+                    </div>
+
                     <div class="filters-actions">
                         <button type="submit" class="btn-filter">Aplicar filtros</button>
                         <a class="btn-clear" href="index.php?accion=listar">Limpiar</a>
@@ -237,6 +269,16 @@ $filtrosQ = http_build_query(array_filter([
                 <input type="hidden" name="filtro_fecha_hasta" value="<?php echo htmlspecialchars($filtros['fecha_hasta'] ?? ''); ?>">
                 <input type="hidden" name="filtro_id_dispositivo" value="<?php echo htmlspecialchars($filtros['id_dispositivo'] ?? ''); ?>">
                 <input type="hidden" name="filtro_buscar" value="<?php echo htmlspecialchars($filtros['buscar'] ?? ''); ?>">
+                <input type="hidden" name="filtro_temperatura_min" value="<?php echo htmlspecialchars((string) ($filtros['temperatura_min'] ?? '')); ?>">
+                <input type="hidden" name="filtro_temperatura_max" value="<?php echo htmlspecialchars((string) ($filtros['temperatura_max'] ?? '')); ?>">
+                <input type="hidden" name="filtro_humedad_min" value="<?php echo htmlspecialchars((string) ($filtros['humedad_min'] ?? '')); ?>">
+                <input type="hidden" name="filtro_humedad_max" value="<?php echo htmlspecialchars((string) ($filtros['humedad_max'] ?? '')); ?>">
+                <input type="hidden" name="filtro_humedad_suelo_min" value="<?php echo htmlspecialchars((string) ($filtros['humedad_suelo_min'] ?? '')); ?>">
+                <input type="hidden" name="filtro_humedad_suelo_max" value="<?php echo htmlspecialchars((string) ($filtros['humedad_suelo_max'] ?? '')); ?>">
+                <input type="hidden" name="filtro_calidad_aire_min" value="<?php echo htmlspecialchars((string) ($filtros['calidad_aire_min'] ?? '')); ?>">
+                <input type="hidden" name="filtro_calidad_aire_max" value="<?php echo htmlspecialchars((string) ($filtros['calidad_aire_max'] ?? '')); ?>">
+                <input type="hidden" name="filtro_lluvia_min" value="<?php echo htmlspecialchars((string) ($filtros['lluvia_min'] ?? '')); ?>">
+                <input type="hidden" name="filtro_lluvia_max" value="<?php echo htmlspecialchars((string) ($filtros['lluvia_max'] ?? '')); ?>">
                 <input type="hidden" name="pagina" value="<?php echo $pagina; ?>">
 
                 <div class="modal-body">
@@ -286,11 +328,70 @@ $filtrosQ = http_build_query(array_filter([
         </div>
     </div>
 
+    <div class="modal-overlay" id="filtersModalOverlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Filtros Avanzados</h3>
+                <button class="modal-close" onclick="cerrarFiltrosAvanzados()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="filtersForm" method="GET" action="index.php">
+                    <input type="hidden" name="accion" value="listar">
+                    <input type="hidden" name="fecha_desde" id="ff_fecha_desde">
+                    <input type="hidden" name="fecha_hasta" id="ff_fecha_hasta">
+                    <input type="hidden" name="id_dispositivo" id="ff_id_dispositivo">
+                    <input type="hidden" name="buscar" id="ff_buscar">
+
+                    <?php
+                    $rangosFields = [
+                        'temperatura' => 'Temperatura (°C)',
+                        'humedad' => 'Humedad (%)',
+                        'humedad_suelo' => 'Hum. Suelo (%)',
+                        'calidad_aire' => 'Calidad del Aire (PPM)',
+                        'lluvia' => 'Lluvia (%)',
+                    ];
+                    $hasAdvancedFilters = false;
+                    foreach ($rangosFields as $key => $label):
+                        $minVal = $filtros[$key . '_min'] ?? '';
+                        $maxVal = $filtros[$key . '_max'] ?? '';
+                        if ($minVal !== '' || $maxVal !== '') $hasAdvancedFilters = true;
+                    ?>
+                        <div class="form-group">
+                            <label><?php echo $label; ?></label>
+                            <div class="range-group">
+                                <input type="number" step="0.1" name="<?php echo $key; ?>_min" placeholder="Min" value="<?php echo htmlspecialchars((string) $minVal); ?>">
+                                <span class="range-sep">&ndash;</span>
+                                <input type="number" step="0.1" name="<?php echo $key; ?>_max" placeholder="Max" value="<?php echo htmlspecialchars((string) $maxVal); ?>">
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <?php if ($hasAdvancedFilters): ?>
+                    <button type="button" class="btn-cancel" onclick="limpiarFiltrosAvanzados()">Limpiar filtros</button>
+                <?php endif; ?>
+                <button type="button" class="btn-cancel" onclick="cerrarFiltrosAvanzados()">Cancelar</button>
+                <button type="button" class="btn-save" onclick="aplicarFiltrosAvanzados()">Aplicar</button>
+            </div>
+        </div>
+    </div>
+
     <form id="deleteForm" method="POST" action="" style="display:none;">
         <input type="hidden" name="filtro_fecha_desde" value="<?php echo htmlspecialchars($filtros['fecha_desde'] ?? ''); ?>">
         <input type="hidden" name="filtro_fecha_hasta" value="<?php echo htmlspecialchars($filtros['fecha_hasta'] ?? ''); ?>">
         <input type="hidden" name="filtro_id_dispositivo" value="<?php echo htmlspecialchars($filtros['id_dispositivo'] ?? ''); ?>">
         <input type="hidden" name="filtro_buscar" value="<?php echo htmlspecialchars($filtros['buscar'] ?? ''); ?>">
+        <input type="hidden" name="filtro_temperatura_min" value="<?php echo htmlspecialchars((string) ($filtros['temperatura_min'] ?? '')); ?>">
+        <input type="hidden" name="filtro_temperatura_max" value="<?php echo htmlspecialchars((string) ($filtros['temperatura_max'] ?? '')); ?>">
+        <input type="hidden" name="filtro_humedad_min" value="<?php echo htmlspecialchars((string) ($filtros['humedad_min'] ?? '')); ?>">
+        <input type="hidden" name="filtro_humedad_max" value="<?php echo htmlspecialchars((string) ($filtros['humedad_max'] ?? '')); ?>">
+        <input type="hidden" name="filtro_humedad_suelo_min" value="<?php echo htmlspecialchars((string) ($filtros['humedad_suelo_min'] ?? '')); ?>">
+        <input type="hidden" name="filtro_humedad_suelo_max" value="<?php echo htmlspecialchars((string) ($filtros['humedad_suelo_max'] ?? '')); ?>">
+        <input type="hidden" name="filtro_calidad_aire_min" value="<?php echo htmlspecialchars((string) ($filtros['calidad_aire_min'] ?? '')); ?>">
+        <input type="hidden" name="filtro_calidad_aire_max" value="<?php echo htmlspecialchars((string) ($filtros['calidad_aire_max'] ?? '')); ?>">
+        <input type="hidden" name="filtro_lluvia_min" value="<?php echo htmlspecialchars((string) ($filtros['lluvia_min'] ?? '')); ?>">
+        <input type="hidden" name="filtro_lluvia_max" value="<?php echo htmlspecialchars((string) ($filtros['lluvia_max'] ?? '')); ?>">
         <input type="hidden" name="pagina" value="<?php echo $pagina; ?>">
     </form>
 
@@ -358,6 +459,36 @@ document.getElementById('modalOverlay').addEventListener('click', function(e) {
         cerrarModal();
     }
 });
+
+document.getElementById('filtersModalOverlay').addEventListener('click', function(e) {
+    if (e.target === this) {
+        cerrarFiltrosAvanzados();
+    }
+});
+
+function abrirFiltrosAvanzados() {
+    document.getElementById('ff_fecha_desde').value = document.getElementById('fecha_desde').value;
+    document.getElementById('ff_fecha_hasta').value = document.getElementById('fecha_hasta').value;
+    document.getElementById('ff_id_dispositivo').value = document.getElementById('id_dispositivo').value;
+    document.getElementById('ff_buscar').value = document.querySelector('.search-input').value;
+    document.getElementById('filtersModalOverlay').classList.add('active');
+}
+
+function cerrarFiltrosAvanzados() {
+    document.getElementById('filtersModalOverlay').classList.remove('active');
+}
+
+function aplicarFiltrosAvanzados() {
+    document.getElementById('filtersForm').submit();
+}
+
+function limpiarFiltrosAvanzados() {
+    var inputs = document.querySelectorAll('#filtersForm input[type="number"]');
+    for (var i = 0; i < inputs.length; i++) {
+        inputs[i].value = '';
+    }
+    document.getElementById('filtersForm').submit();
+}
 </script>
 </body>
 </html>

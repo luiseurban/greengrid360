@@ -69,6 +69,13 @@ class MedicionController {
             }
         }
 
+        if (isset($_GET['hora_desde']) && ctype_digit($_GET['hora_desde'])) {
+            $filtros['hora_desde'] = (int) $_GET['hora_desde'];
+        }
+        if (isset($_GET['hora_hasta']) && ctype_digit($_GET['hora_hasta'])) {
+            $filtros['hora_hasta'] = (int) $_GET['hora_hasta'];
+        }
+
         return $filtros;
     }
 
@@ -211,7 +218,8 @@ class MedicionController {
                        'humedad_min', 'humedad_max',
                        'humedad_suelo_min', 'humedad_suelo_max',
                        'calidad_aire_min', 'calidad_aire_max',
-                       'lluvia_min', 'lluvia_max'];
+                       'lluvia_min', 'lluvia_max',
+                       'hora_desde', 'hora_hasta'];
 
         foreach ($filtroKeys as $key) {
             $valor = $_POST['filtro_' . $key] ?? $_GET[$key] ?? '';

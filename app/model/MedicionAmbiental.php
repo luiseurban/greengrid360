@@ -47,6 +47,13 @@ class MedicionAmbiental {
             }
         }
 
+        if (isset($filtros['hora_desde']) && $filtros['hora_desde'] !== '') {
+            $condiciones[] = "HOUR(m.fecha_hora) >= " . (int)$filtros['hora_desde'];
+        }
+        if (isset($filtros['hora_hasta']) && $filtros['hora_hasta'] !== '') {
+            $condiciones[] = "HOUR(m.fecha_hora) <= " . (int)$filtros['hora_hasta'];
+        }
+
         return $condiciones;
     }
 

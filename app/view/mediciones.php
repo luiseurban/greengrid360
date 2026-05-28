@@ -8,6 +8,10 @@ $baseQuery = http_build_query($queryParams);
 $baseUrl = 'index.php?' . $baseQuery;
 $pageSeparator = $baseQuery !== '' ? '&' : '';
 
+$rangeKeys = ['temperatura_min', 'temperatura_max', 'humedad_min', 'humedad_max',
+              'humedad_suelo_min', 'humedad_suelo_max', 'calidad_aire_min', 'calidad_aire_max',
+              'lluvia_min', 'lluvia_max'];
+
 $filtrosQ = http_build_query(array_filter([
     'fecha_desde' => $filtros['fecha_desde'] ?? null,
     'fecha_hasta' => $filtros['fecha_hasta'] ?? null,
@@ -89,6 +93,17 @@ $filtrosQ = http_build_query(array_filter([
                         <?php if (!empty($filtros['id_dispositivo'])): ?>
                             <input type="hidden" name="id_dispositivo" value="<?php echo htmlspecialchars($filtros['id_dispositivo']); ?>">
                         <?php endif; ?>
+                        <?php if (($filtros['hora_desde'] ?? '') !== ''): ?>
+                            <input type="hidden" name="hora_desde" value="<?php echo htmlspecialchars($filtros['hora_desde']); ?>">
+                        <?php endif; ?>
+                        <?php if (($filtros['hora_hasta'] ?? '') !== ''): ?>
+                            <input type="hidden" name="hora_hasta" value="<?php echo htmlspecialchars($filtros['hora_hasta']); ?>">
+                        <?php endif; ?>
+                        <?php foreach ($rangeKeys as $rk):
+                            if (($filtros[$rk] ?? '') !== ''):
+                        ?>
+                            <input type="hidden" name="<?php echo $rk; ?>" value="<?php echo htmlspecialchars((string) $filtros[$rk]); ?>">
+                        <?php endif; endforeach; ?>
                         <input type="text" name="buscar" class="search-input" placeholder="Buscar mediciones..." value="<?php echo htmlspecialchars($filtros['buscar'] ?? ''); ?>" oninput="buscarEnTiempoReal(this)">
                         <?php if (!empty($filtros['buscar'])): ?>
                             <?php
@@ -107,20 +122,35 @@ $filtrosQ = http_build_query(array_filter([
             <section class="filters-panel">
                 <form method="GET" action="index.php" class="filters-form">
                     <input type="hidden" name="accion" value="listar">
+                    <?php if (!empty($filtros['buscar'])): ?>
+                        <input type="hidden" name="buscar" value="<?php echo htmlspecialchars($filtros['buscar']); ?>">
+                    <?php endif; ?>
+                    <?php if (($filtros['hora_desde'] ?? '') !== ''): ?>
+                        <input type="hidden" name="hora_desde" value="<?php echo htmlspecialchars($filtros['hora_desde']); ?>">
+                    <?php endif; ?>
+                    <?php if (($filtros['hora_hasta'] ?? '') !== ''): ?>
+                        <input type="hidden" name="hora_hasta" value="<?php echo htmlspecialchars($filtros['hora_hasta']); ?>">
+                    <?php endif; ?>
+                    <?php
+                    foreach ($rangeKeys as $rk):
+                        if (($filtros[$rk] ?? '') !== ''):
+                    ?>
+                        <input type="hidden" name="<?php echo $rk; ?>" value="<?php echo htmlspecialchars((string) $filtros[$rk]); ?>">
+                    <?php endif; endforeach; ?>
 
                     <div class="filter-group">
                         <label for="fecha_desde">Fecha desde</label>
-                        <input type="date" id="fecha_desde" name="fecha_desde" value="<?php echo htmlspecialchars($filtros['fecha_desde'] ?? ''); ?>">
+                        <input type="date" id="fecha_desde" name="fecha_desde" value="<?php echo htmlspecialchars($filtros['fecha_desde'] ?? ''); ?>" onchange="this.form.submit()">
                     </div>
 
                     <div class="filter-group">
                         <label for="fecha_hasta">Fecha hasta</label>
-                        <input type="date" id="fecha_hasta" name="fecha_hasta" value="<?php echo htmlspecialchars($filtros['fecha_hasta'] ?? ''); ?>">
+                        <input type="date" id="fecha_hasta" name="fecha_hasta" value="<?php echo htmlspecialchars($filtros['fecha_hasta'] ?? ''); ?>" onchange="this.form.submit()">
                     </div>
 
                     <div class="filter-group">
                         <label for="id_dispositivo">Dispositivo</label>
-                        <select id="id_dispositivo" name="id_dispositivo">
+                        <select id="id_dispositivo" name="id_dispositivo" onchange="this.form.submit()">
                             <option value="">Todos</option>
                             <?php foreach ($dispositivos as $disp): ?>
                                 <option value="<?php echo $disp['id_dispositivo']; ?>" <?php echo ($filtros['id_dispositivo'] ?? '') == $disp['id_dispositivo'] ? 'selected' : ''; ?>>
@@ -129,6 +159,24 @@ $filtrosQ = http_build_query(array_filter([
                             <?php endforeach; ?>
                         </select>
                     </div>
+
+                    <?php
+                    $horaDesde = $filtros['hora_desde'] ?? '';
+                    $horaHasta = $filtros['hora_hasta'] ?? '';
+                    if ($horaDesde !== '' || $horaHasta !== ''):
+                        $urlParams = $_GET;
+                        unset($urlParams['hora_desde'], $urlParams['hora_hasta']);
+                        $urlParams['accion'] = 'listar';
+                        $removeUrl = 'index.php?' . http_build_query($urlParams);
+                    ?>
+                        <div class="filter-group">
+                            <label>Hora</label>
+                            <div class="filter-chip">
+                                <span class="chip-text"><?php echo $horaDesde !== '' ? sprintf('%02d:00', $horaDesde) : '···'; ?> &ndash; <?php echo $horaHasta !== '' ? sprintf('%02d:00', $horaHasta) : '···'; ?></span>
+                                <a href="<?php echo $removeUrl; ?>" class="chip-remove" title="Quitar filtro">&times;</a>
+                            </div>
+                        </div>
+                    <?php endif; ?>
 
                     <?php
                     $rangosChips = [
@@ -162,10 +210,20 @@ $filtrosQ = http_build_query(array_filter([
                         <button type="button" class="btn-more-filters" onclick="abrirFiltrosAvanzados()">Mas filtros</button>
                     </div>
 
+                    <?php
+                    $hasFilters = !empty($filtros['fecha_desde']) || !empty($filtros['fecha_hasta']) || !empty($filtros['id_dispositivo'])
+                        || !empty($filtros['buscar']) || ($filtros['hora_desde'] ?? '') !== '' || ($filtros['hora_hasta'] ?? '') !== '';
+                    foreach ($rangosChips as $key => $label) {
+                        if (($filtros[$key . '_min'] ?? '') !== '' || ($filtros[$key . '_max'] ?? '') !== '') {
+                            $hasFilters = true;
+                            break;
+                        }
+                    }
+                    if ($hasFilters): ?>
                     <div class="filters-actions">
-                        <button type="submit" class="btn-filter">Aplicar filtros</button>
                         <a class="btn-clear" href="index.php?accion=listar">Limpiar</a>
                     </div>
+                    <?php endif; ?>
                 </form>
             </section>
             
@@ -279,6 +337,8 @@ $filtrosQ = http_build_query(array_filter([
                 <input type="hidden" name="filtro_calidad_aire_max" value="<?php echo htmlspecialchars((string) ($filtros['calidad_aire_max'] ?? '')); ?>">
                 <input type="hidden" name="filtro_lluvia_min" value="<?php echo htmlspecialchars((string) ($filtros['lluvia_min'] ?? '')); ?>">
                 <input type="hidden" name="filtro_lluvia_max" value="<?php echo htmlspecialchars((string) ($filtros['lluvia_max'] ?? '')); ?>">
+                <input type="hidden" name="filtro_hora_desde" value="<?php echo htmlspecialchars((string) ($filtros['hora_desde'] ?? '')); ?>">
+                <input type="hidden" name="filtro_hora_hasta" value="<?php echo htmlspecialchars((string) ($filtros['hora_hasta'] ?? '')); ?>">
                 <input type="hidden" name="pagina" value="<?php echo $pagina; ?>">
 
                 <div class="modal-body">
@@ -342,6 +402,25 @@ $filtrosQ = http_build_query(array_filter([
                     <input type="hidden" name="id_dispositivo" id="ff_id_dispositivo">
                     <input type="hidden" name="buscar" id="ff_buscar">
 
+                        <div class="form-group">
+                            <label>Hora</label>
+                            <div class="range-group">
+                                <select name="hora_desde">
+                                    <option value="">Desde</option>
+                                    <?php for ($h = 0; $h <= 23; $h++): ?>
+                                        <option value="<?php echo $h; ?>" <?php echo ($filtros['hora_desde'] ?? '') === (string) $h ? 'selected' : ''; ?>><?php printf('%02d:00', $h); ?></option>
+                                    <?php endfor; ?>
+                                </select>
+                                <span class="range-sep">&ndash;</span>
+                                <select name="hora_hasta">
+                                    <option value="">Hasta</option>
+                                    <?php for ($h = 0; $h <= 23; $h++): ?>
+                                        <option value="<?php echo $h; ?>" <?php echo ($filtros['hora_hasta'] ?? '') === (string) $h ? 'selected' : ''; ?>><?php printf('%02d:00', $h); ?></option>
+                                    <?php endfor; ?>
+                                </select>
+                            </div>
+                        </div>
+
                     <?php
                     $rangosFields = [
                         'temperatura' => 'Temperatura (°C)',
@@ -350,7 +429,7 @@ $filtrosQ = http_build_query(array_filter([
                         'calidad_aire' => 'Calidad del Aire (PPM)',
                         'lluvia' => 'Lluvia (%)',
                     ];
-                    $hasAdvancedFilters = false;
+                    $hasAdvancedFilters = ($filtros['hora_desde'] ?? '') !== '' || ($filtros['hora_hasta'] ?? '') !== '';
                     foreach ($rangosFields as $key => $label):
                         $minVal = $filtros[$key . '_min'] ?? '';
                         $maxVal = $filtros[$key . '_max'] ?? '';
@@ -392,6 +471,8 @@ $filtrosQ = http_build_query(array_filter([
         <input type="hidden" name="filtro_calidad_aire_max" value="<?php echo htmlspecialchars((string) ($filtros['calidad_aire_max'] ?? '')); ?>">
         <input type="hidden" name="filtro_lluvia_min" value="<?php echo htmlspecialchars((string) ($filtros['lluvia_min'] ?? '')); ?>">
         <input type="hidden" name="filtro_lluvia_max" value="<?php echo htmlspecialchars((string) ($filtros['lluvia_max'] ?? '')); ?>">
+        <input type="hidden" name="filtro_hora_desde" value="<?php echo htmlspecialchars((string) ($filtros['hora_desde'] ?? '')); ?>">
+        <input type="hidden" name="filtro_hora_hasta" value="<?php echo htmlspecialchars((string) ($filtros['hora_hasta'] ?? '')); ?>">
         <input type="hidden" name="pagina" value="<?php echo $pagina; ?>">
     </form>
 
@@ -486,6 +567,10 @@ function limpiarFiltrosAvanzados() {
     var inputs = document.querySelectorAll('#filtersForm input[type="number"]');
     for (var i = 0; i < inputs.length; i++) {
         inputs[i].value = '';
+    }
+    var selects = document.querySelectorAll('#filtersForm select[name^="hora_"]');
+    for (var i = 0; i < selects.length; i++) {
+        selects[i].value = '';
     }
     document.getElementById('filtersForm').submit();
 }

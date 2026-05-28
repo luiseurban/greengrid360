@@ -580,7 +580,13 @@
     background: #fff2f9;
 }
 
-.filters-dispositivos {
+#filtersForm .form-group {
+    margin-bottom: 12px;
+}
+
+#filtersForm .form-group:last-of-type {
+    margin-bottom: 0;
+}
     display: flex;
     align-items: flex-end;
     gap: 10px;

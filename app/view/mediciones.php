@@ -1,29 +1,45 @@
+<?php
+$has_session = isset($_SESSION['usuario']);
+$currentAction = $_GET['accion'] ?? 'listar';
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mediciones Ambientales - GreenGrid 360</title>
-    <link rel="stylesheet" href="../css/mediciones.css">
+    <title>Mediciones | GreenGrid 360</title>
+    <link rel="stylesheet" href="../css/index.css">
 </head>
-<body>
-    <div class="container">
-        <?php
-            $totalMediciones = is_array($mediciones ?? null) ? count($mediciones) : 0;
-            $ultimaActualizacion = $totalMediciones > 0 ? $mediciones[0]['fecha_hora'] : 'Sin datos';
-        ?>
+<body class="dashboard-page">
+    <aside class="dashboard-sidebar">
+        <div class="sidebar-brand">
+            <span class="brand-mark">GreenGrid 360</span>
+        </div>
 
-        <header class="panel-header">
-            <div>
-                <p class="brand-tag">GreenGrid 360</p>
-                <h1>Mediciones Ambientales</h1>
-                <p class="subtitle">Panel de consulta de registros ambientales</p>
-            </div>
-            <div class="top-bar">
-                <p>Sesion: <?php echo htmlspecialchars($_SESSION['usuario']['nombre'] ?? ''); ?></p>
-                <a class="logout-link" href="index.php?accion=logout">Cerrar sesion</a>
-            </div>
-        </header>
+        <nav class="sidebar-nav">
+            <a href="index.php?accion=listar" class="sidebar-link <?php echo $currentAction === 'listar' ? 'active' : ''; ?>">
+                Mediciones
+            </a>
+            <a href="index.php?accion=registro" class="sidebar-link <?php echo $currentAction === 'registro' ? 'active' : ''; ?>">
+                Registro
+            </a>
+            <a href="index.php?accion=home" class="sidebar-link">
+                Inicio
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <p class="sidebar-user"><?php echo htmlspecialchars($_SESSION['usuario']['nombre'] ?? 'Usuario'); ?></p>
+            <a href="index.php?accion=logout" class="sidebar-logout">Cerrar sesion</a>
+        </div>
+    </aside>
+
+    <main class="dashboard-main">
+        <div class="container">
+            <?php
+                $totalMediciones = is_array($mediciones ?? null) ? count($mediciones) : 0;
+                $ultimaActualizacion = $totalMediciones > 0 ? $mediciones[0]['fecha_hora'] : 'Sin datos';
+            ?>
 
         <section class="stats-row">
             <article class="stat-card">
@@ -86,5 +102,6 @@
             </div>
         <?php endif; ?>
     </div>
+</main>
 </body>
 </html>

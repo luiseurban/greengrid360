@@ -26,10 +26,10 @@
                 <label for="correo">Correo</label>
                 <input type="email" id="correo" name="correo" required>
 
-                <label for="password">Contrasena</label>
+                <label for="password">Contraseña</label>
                 <input type="password" id="password" name="password" required>
 
-                <label for="confirmacion">Confirmar contrasena</label>
+                <label for="confirmacion">Confirmar contraseña</label>
                 <input type="password" id="confirmacion" name="confirmacion" required>
 
                 <button type="submit" class="auth-btn">Registrarme</button>

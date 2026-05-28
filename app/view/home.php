@@ -1,3 +1,6 @@
+<?php
+$has_session = isset($_SESSION['usuario']);
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -15,7 +18,9 @@
         <nav class="landing-nav" aria-label="Navegacion principal">
             <a href="index.php?accion=listar">Datos</a>
             <a href="index.php?accion=registro">Registro</a>
-            <a class="btn btn-secondary btn-login" href="index.php?accion=login">Iniciar sesion</a>
+            <a class="btn btn-secondary btn-login" href="index.php?accion=<?php echo $has_session ? 'listar' : 'login'; ?>">
+                <?php echo $has_session ? 'Dashboard' : 'Iniciar sesion'; ?>
+            </a>
         </nav>
     </header>
 
@@ -53,11 +58,6 @@
             <div class="hero-visual">
                 <div class="image-frame image-frame-large">
                     <span>Imagen principal pendiente</span>
-                </div>
-                <div class="floating-card">
-                    <p>Datos en tiempo real</p>
-                    <strong>ESP32 + sensores ambientales</strong>
-                    <span>Base para exportacion y consulta posterior en la plataforma.</span>
                 </div>
             </div>
         </section>
@@ -142,7 +142,9 @@
     <footer class="landing-footer">
         <p>GreenGrid 360 - Monitoreo ambiental y tecnologia sostenible para espacios verdes.</p>
         <div class="footer-right">
-            <a href="index.php?accion=login">Acceso al sistema</a>
+            <a href="index.php?accion=<?php echo $has_session ? 'listar' : 'login'; ?>">
+                <?php echo $has_session ? 'Dashboard' : 'Acceso al sistema'; ?>
+            </a>
             <span class="copyright">&copy; 2026 GreenGrid 360. Todos los derechos reservados.</span>
         </div>
     </footer>

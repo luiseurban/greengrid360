@@ -70,7 +70,7 @@ body.landing-page {
 }
 
 .landing-shell {
-    max-width: 1180px;
+    max-width: 90%;
     margin: 0 auto;
     padding: 32px 24px;
     flex: 1;
@@ -185,8 +185,7 @@ body.landing-page {
 }
 
 .hero-notes article,
-.design-card,
-.floating-card {
+.design-card {
     background: rgba(255, 255, 255, 0.92);
     border: 1px solid rgba(199, 129, 162, 0.16);
     border-radius: 20px;
@@ -198,16 +197,14 @@ body.landing-page {
 }
 
 .hero-notes strong,
-.design-card h3,
-.floating-card strong {
+.design-card h3 {
     display: block;
     color: #4e2b42;
     margin-bottom: 8px;
     font-size: 1.04rem;
 }
 
-.hero-notes span,
-.floating-card span {
+.hero-notes span {
     color: #76606e;
     line-height: 1.6;
 }
@@ -244,14 +241,6 @@ body.landing-page {
 
 .image-frame-small {
     min-height: 180px;
-}
-
-.floating-card {
-    position: absolute;
-    left: 0;
-    bottom: 36px;
-    max-width: 260px;
-    padding: 20px;
 }
 
 .section-block {
@@ -419,12 +408,6 @@ body.landing-page {
 
     .hero-visual {
         min-height: 420px;
-    }
-
-    .floating-card {
-        position: static;
-        margin-top: 18px;
-        max-width: none;
     }
 
     .cta-band {

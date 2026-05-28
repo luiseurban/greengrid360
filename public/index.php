@@ -9,12 +9,17 @@ $accion = null;
 $id = $_GET['id'] ?? null;
 $db = null;
 $conexion = null;
+$accion = $_GET['accion'] ?? 'home';
+
+if ($accion === 'home') {
+    require(__DIR__ . '/../app/view/home.php');
+    exit;
+}
 
 try {
     $db = new Database();
     $conexion = $db->getConexion();
     $auth = new AuthController($conexion);
-    $accion = $_GET['accion'] ?? ($auth->yaAutenticado() ? 'listar' : 'login');
 
     switch ($accion) {
         case 'login':

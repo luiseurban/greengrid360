@@ -11,8 +11,8 @@ class MedicionAmbiental {
      * Obtiene todas las mediciones ordenadas por fecha descendente
      */
     public function obtenerMediciones($filtros = []) {
-        $sql = "SELECT fecha_hora, temperatura, humedad, calidad_aire, fecha_hora_movimiento 
-            FROM medicion_ambiental";
+        $sql = "SELECT fecha_hora, temperatura, humedad, calidad_aire 
+                FROM medicion_ambiental";
 
         $condiciones = [];
 

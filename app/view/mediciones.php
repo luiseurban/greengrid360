@@ -109,11 +109,11 @@ $pageSeparator = $baseQuery !== '' ? '&' : '';
                             <tr>
                                 <th>Fecha y Hora</th>
                                 <th>Dispositivo</th>
-                                <th>Temperatura (°C)</th>
-                                <th>Humedad (%)</th>
-                                <th>Hum. Suelo (%)</th>
-                                <th>Calidad del Aire (PPM)</th>
-                                <th>Lluvia (mm)</th>
+                                <th>Temperatura</th>
+                                <th>Humedad</th>
+                                <th>Hum. Suelo</th>
+                                <th>Calidad del Aire</th>
+                                <th>Lluvia</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -121,11 +121,11 @@ $pageSeparator = $baseQuery !== '' ? '&' : '';
                                 <tr>
                                     <td><?php echo htmlspecialchars($fila['fecha_hora']); ?></td>
                                     <td><?php echo htmlspecialchars($fila['ubicacion']); ?></td>
-                                    <td><?php echo htmlspecialchars((string) $fila['temperatura']); ?></td>
-                                    <td><?php echo htmlspecialchars((string) $fila['humedad']); ?></td>
-                                    <td><?php echo htmlspecialchars((string) $fila['humedad_suelo']); ?></td>
-                                    <td><?php echo htmlspecialchars((string) $fila['calidad_aire']); ?></td>
-                                    <td><?php echo htmlspecialchars((string) $fila['lluvia']); ?></td>
+                                    <td><?php echo htmlspecialchars((string) $fila['temperatura']); ?> °C</td>
+                                    <td><?php echo htmlspecialchars((string) $fila['humedad']); ?> %</td>
+                                    <td><?php echo htmlspecialchars((string) $fila['humedad_suelo']); ?> %</td>
+                                    <td><?php echo htmlspecialchars((string) $fila['calidad_aire']); ?> PPM</td>
+                                    <td><?php echo htmlspecialchars((string) $fila['lluvia']); ?> %</td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>

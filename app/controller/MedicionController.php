@@ -10,7 +10,7 @@ class MedicionController {
     
     public function listar() {
         $filtros = $this->obtenerFiltros();
-        $porPagina = 20;
+        $porPagina = 10;
         $pagina = $this->obtenerPagina();
 
         $todos = $this->modelo->obtenerMediciones($filtros);

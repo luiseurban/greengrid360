@@ -63,6 +63,8 @@ try {
         case 'listar':
         case 'ver':
         case 'crear':
+        case 'editar':
+        case 'eliminar':
             $auth->requireAuth();
 
             $controlador = new MedicionController($conexion);
@@ -76,11 +78,11 @@ try {
                     $controlador->listar();
                 }
             } elseif ($accion === 'crear' && $_SERVER['REQUEST_METHOD'] === 'POST') {
-                $temperatura = $_POST['temperatura'] ?? null;
-                $humedad = $_POST['humedad'] ?? null;
-                $calidad_aire = $_POST['calidad_aire'] ?? null;
-
-                $controlador->crear($temperatura, $humedad, $calidad_aire);
+                $controlador->crear();
+            } elseif ($accion === 'editar' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+                $controlador->actualizar();
+            } elseif ($accion === 'eliminar' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+                $controlador->eliminar();
             } else {
                 header('Location: index.php?accion=listar');
                 exit;

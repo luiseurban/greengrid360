@@ -100,14 +100,118 @@ class MedicionController {
         require(__DIR__ . '/../view/medicion_detalle.php');
     }
     
-    public function crear($temperatura, $humedad, $calidad_aire) {
-        if ($this->modelo->insertar($temperatura, $humedad, $calidad_aire)) {
-            header("Location: index.php");
-            exit;
+    public function crear() {
+        $temperatura = $_POST['temperatura'] ?? null;
+        $humedad = $_POST['humedad'] ?? null;
+        $humedad_suelo = $_POST['humedad_suelo'] ?? null;
+        $calidad_aire = $_POST['calidad_aire'] ?? null;
+        $lluvia = $_POST['lluvia'] ?? null;
+        $fecha_hora = $_POST['fecha_hora'] ?? null;
+        $id_dispositivo = $_POST['id_dispositivo'] ?? null;
+
+        $datos = [
+            'temperatura' => $this->aFloat($temperatura),
+            'humedad' => $this->aFloat($humedad),
+            'humedad_suelo' => $this->aFloat($humedad_suelo),
+            'calidad_aire' => $this->aFloat($calidad_aire),
+            'lluvia' => $this->aFloat($lluvia),
+            'fecha_hora' => $fecha_hora,
+            'id_dispositivo' => (int) $id_dispositivo
+        ];
+
+        if ($this->modelo->insertar($datos)) {
+            $this->redirectToListar();
         } else {
             $error = "Error al insertar la medición";
             require(__DIR__ . '/../view/error.php');
         }
+    }
+
+    public function actualizar() {
+        $id = $_GET['id'] ?? null;
+
+        if (!$id) {
+            $this->redirectToListar();
+            return;
+        }
+
+        $temperatura = $_POST['temperatura'] ?? null;
+        $humedad = $_POST['humedad'] ?? null;
+        $humedad_suelo = $_POST['humedad_suelo'] ?? null;
+        $calidad_aire = $_POST['calidad_aire'] ?? null;
+        $lluvia = $_POST['lluvia'] ?? null;
+        $fecha_hora = $_POST['fecha_hora'] ?? null;
+        $id_dispositivo = $_POST['id_dispositivo'] ?? null;
+
+        $datos = [
+            'temperatura' => $this->aFloat($temperatura),
+            'humedad' => $this->aFloat($humedad),
+            'humedad_suelo' => $this->aFloat($humedad_suelo),
+            'calidad_aire' => $this->aFloat($calidad_aire),
+            'lluvia' => $this->aFloat($lluvia),
+            'fecha_hora' => $fecha_hora,
+            'id_dispositivo' => (int) $id_dispositivo
+        ];
+
+        if ($this->modelo->actualizar($id, $datos)) {
+            $this->redirectToListar();
+        } else {
+            $error = "Error al actualizar la medición";
+            require(__DIR__ . '/../view/error.php');
+        }
+    }
+
+    public function eliminar() {
+        $id = $_GET['id'] ?? null;
+
+        if (!$id) {
+            $this->redirectToListar();
+            return;
+        }
+
+        if ($this->modelo->eliminar($id)) {
+            $this->redirectToListar();
+        } else {
+            $error = "Error al eliminar la medición";
+            require(__DIR__ . '/../view/error.php');
+        }
+    }
+
+    private function aFloat($valor) {
+        if ($valor === null || $valor === '') {
+            return null;
+        }
+        return (float) $valor;
+    }
+
+    private function redirectToListar() {
+        $params = [];
+
+        $filtroFechaDesde = $_POST['filtro_fecha_desde'] ?? $_GET['fecha_desde'] ?? '';
+        $filtroFechaHasta = $_POST['filtro_fecha_hasta'] ?? $_GET['fecha_hasta'] ?? '';
+        $filtroIdDispositivo = $_POST['filtro_id_dispositivo'] ?? $_GET['id_dispositivo'] ?? '';
+        $pagina = $_POST['pagina'] ?? $_GET['pagina'] ?? '';
+
+        if ($filtroFechaDesde !== '') {
+            $params['fecha_desde'] = $filtroFechaDesde;
+        }
+        if ($filtroFechaHasta !== '') {
+            $params['fecha_hasta'] = $filtroFechaHasta;
+        }
+        if ($filtroIdDispositivo !== '') {
+            $params['id_dispositivo'] = $filtroIdDispositivo;
+        }
+        if ($pagina !== '') {
+            $params['pagina'] = $pagina;
+        }
+
+        if (empty($params)) {
+            header('Location: index.php?accion=listar');
+        } else {
+            $params['accion'] = 'listar';
+            header('Location: index.php?' . http_build_query($params));
+        }
+        exit;
     }
 }
 ?>

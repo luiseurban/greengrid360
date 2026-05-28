@@ -86,13 +86,48 @@ class MedicionAmbiental {
         return $resultado->fetch_assoc();
     }
     
-    public function insertar($temperatura, $humedad, $calidad_aire) {
-        $sql = "INSERT INTO medicion_ambiental (temperatura, humedad, calidad_aire, fecha_hora) 
-                VALUES (?, ?, ?, NOW())";
+    public function insertar($datos) {
+        $sql = "INSERT INTO medicion_ambiental (temperatura, humedad, humedad_suelo, calidad_aire, lluvia, fecha_hora, id_dispositivo) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
         
         $stmt = $this->conexion->prepare($sql);
-        $stmt->bind_param("ddi", $temperatura, $humedad, $calidad_aire);
+        $stmt->bind_param("dddddsi",
+            $datos['temperatura'],
+            $datos['humedad'],
+            $datos['humedad_suelo'],
+            $datos['calidad_aire'],
+            $datos['lluvia'],
+            $datos['fecha_hora'],
+            $datos['id_dispositivo']
+        );
         
+        return $stmt->execute();
+    }
+
+    public function actualizar($id, $datos) {
+        $sql = "UPDATE medicion_ambiental 
+                SET temperatura = ?, humedad = ?, humedad_suelo = ?, calidad_aire = ?, lluvia = ?, fecha_hora = ?, id_dispositivo = ?
+                WHERE id_medicion = ?";
+        
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("dddddsii",
+            $datos['temperatura'],
+            $datos['humedad'],
+            $datos['humedad_suelo'],
+            $datos['calidad_aire'],
+            $datos['lluvia'],
+            $datos['fecha_hora'],
+            $datos['id_dispositivo'],
+            $id
+        );
+        
+        return $stmt->execute();
+    }
+
+    public function eliminar($id) {
+        $sql = "DELETE FROM medicion_ambiental WHERE id_medicion = ?";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("i", $id);
         return $stmt->execute();
     }
 

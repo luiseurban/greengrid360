@@ -7,6 +7,12 @@ unset($queryParams['pagina']);
 $baseQuery = http_build_query($queryParams);
 $baseUrl = 'index.php?' . $baseQuery;
 $pageSeparator = $baseQuery !== '' ? '&' : '';
+
+$filtrosQ = http_build_query(array_filter([
+    'fecha_desde' => $filtros['fecha_desde'] ?? null,
+    'fecha_hasta' => $filtros['fecha_hasta'] ?? null,
+    'id_dispositivo' => $filtros['id_dispositivo'] ?? null,
+]));
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -69,6 +75,11 @@ $pageSeparator = $baseQuery !== '' ? '&' : '';
                 </article>
             </section>
 
+            <section class="toolbar">
+                <h2 class="section-title">Registros</h2>
+                <button class="btn-create" id="btnCreate" onclick="abrirModalCrear()">+ Crear Medicion</button>
+            </section>
+
             <section class="filters-panel">
                 <form method="GET" action="index.php" class="filters-form">
                     <input type="hidden" name="accion" value="listar">
@@ -114,18 +125,31 @@ $pageSeparator = $baseQuery !== '' ? '&' : '';
                                 <th>Hum. Suelo</th>
                                 <th>Calidad del Aire</th>
                                 <th>Lluvia</th>
+                                <th class="th-acciones">Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
                             <?php foreach ($mediciones as $fila): ?>
-                                <tr>
+                                <tr class="row-medicion"
+                                    data-id="<?php echo htmlspecialchars((string) $fila['id_medicion']); ?>"
+                                    data-temperatura="<?php echo htmlspecialchars((string) $fila['temperatura']); ?>"
+                                    data-humedad="<?php echo htmlspecialchars((string) $fila['humedad']); ?>"
+                                    data-humedad-suelo="<?php echo htmlspecialchars((string) $fila['humedad_suelo']); ?>"
+                                    data-calidad-aire="<?php echo htmlspecialchars((string) $fila['calidad_aire']); ?>"
+                                    data-lluvia="<?php echo htmlspecialchars((string) $fila['lluvia']); ?>"
+                                    data-fecha-hora="<?php echo htmlspecialchars((string) $fila['fecha_hora']); ?>"
+                                    data-id-dispositivo="<?php echo htmlspecialchars((string) $fila['id_dispositivo']); ?>">
                                     <td><?php echo htmlspecialchars($fila['fecha_hora']); ?></td>
-                                    <td><?php echo htmlspecialchars($fila['ubicacion']); ?></td>
+                                    <td><?php echo htmlspecialchars((string) $fila['ubicacion']); ?></td>
                                     <td><?php echo htmlspecialchars((string) $fila['temperatura']); ?> °C</td>
                                     <td><?php echo htmlspecialchars((string) $fila['humedad']); ?> %</td>
                                     <td><?php echo htmlspecialchars((string) $fila['humedad_suelo']); ?> %</td>
                                     <td><?php echo htmlspecialchars((string) $fila['calidad_aire']); ?> PPM</td>
                                     <td><?php echo htmlspecialchars((string) $fila['lluvia']); ?> %</td>
+                                    <td class="td-acciones">
+                                        <button class="btn-edit" onclick="abrirModalEditar(this)" title="Editar">&#9998;</button>
+                                        <button class="btn-delete" onclick="confirmarEliminar(this)" title="Eliminar">&#10005;</button>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -177,5 +201,128 @@ $pageSeparator = $baseQuery !== '' ? '&' : '';
             <?php endif; ?>
         </div>
     </main>
+
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Crear Medicion</h3>
+                <button class="modal-close" onclick="cerrarModal()">&times;</button>
+            </div>
+            <form method="POST" action="" id="modalForm" class="modal-form">
+                <input type="hidden" name="filtro_fecha_desde" value="<?php echo htmlspecialchars($filtros['fecha_desde'] ?? ''); ?>">
+                <input type="hidden" name="filtro_fecha_hasta" value="<?php echo htmlspecialchars($filtros['fecha_hasta'] ?? ''); ?>">
+                <input type="hidden" name="filtro_id_dispositivo" value="<?php echo htmlspecialchars($filtros['id_dispositivo'] ?? ''); ?>">
+                <input type="hidden" name="pagina" value="<?php echo $pagina; ?>">
+
+                <div class="modal-body">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="m_temperatura">Temperatura (°C)</label>
+                            <input type="number" step="0.1" id="m_temperatura" name="temperatura" required placeholder="Ej: 25.5">
+                        </div>
+                        <div class="form-group">
+                            <label for="m_humedad">Humedad (%)</label>
+                            <input type="number" step="0.1" id="m_humedad" name="humedad" required placeholder="Ej: 60.0">
+                        </div>
+                        <div class="form-group">
+                            <label for="m_humedad_suelo">Hum. Suelo (%)</label>
+                            <input type="number" step="0.1" id="m_humedad_suelo" name="humedad_suelo" placeholder="Ej: 45.0">
+                        </div>
+                        <div class="form-group">
+                            <label for="m_calidad_aire">Calidad del Aire (PPM)</label>
+                            <input type="number" step="0.1" id="m_calidad_aire" name="calidad_aire" required placeholder="Ej: 400.0">
+                        </div>
+                        <div class="form-group">
+                            <label for="m_lluvia">Lluvia (%)</label>
+                            <input type="number" step="0.1" id="m_lluvia" name="lluvia" placeholder="Ej: 0.0">
+                        </div>
+                        <div class="form-group">
+                            <label for="m_fecha_hora">Fecha y Hora</label>
+                            <input type="datetime-local" step="1" id="m_fecha_hora" name="fecha_hora" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="m_dispositivo">Dispositivo</label>
+                            <select id="m_dispositivo" name="id_dispositivo" required>
+                                <option value="">Seleccionar...</option>
+                                <?php foreach ($dispositivos as $disp): ?>
+                                    <option value="<?php echo $disp['id_dispositivo']; ?>">
+                                        <?php echo htmlspecialchars($disp['ubicacion']); ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" onclick="cerrarModal()">Cancelar</button>
+                    <button type="submit" class="btn-save" id="btnSave">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <form id="deleteForm" method="POST" action="" style="display:none;">
+        <input type="hidden" name="filtro_fecha_desde" value="<?php echo htmlspecialchars($filtros['fecha_desde'] ?? ''); ?>">
+        <input type="hidden" name="filtro_fecha_hasta" value="<?php echo htmlspecialchars($filtros['fecha_hasta'] ?? ''); ?>">
+        <input type="hidden" name="filtro_id_dispositivo" value="<?php echo htmlspecialchars($filtros['id_dispositivo'] ?? ''); ?>">
+        <input type="hidden" name="pagina" value="<?php echo $pagina; ?>">
+    </form>
+
+<script>
+function abrirModalCrear() {
+    document.getElementById('modalTitle').textContent = 'Crear Medicion';
+    document.getElementById('modalForm').action = 'index.php?accion=crear';
+    document.getElementById('btnSave').textContent = 'Guardar';
+    limpiarFormulario();
+    document.getElementById('modalOverlay').classList.add('active');
+}
+
+function abrirModalEditar(btn) {
+    var row = btn.closest('.row-medicion');
+    document.getElementById('modalTitle').textContent = 'Editar Medicion';
+    document.getElementById('modalForm').action = 'index.php?accion=editar&id=' + row.dataset.id;
+    document.getElementById('btnSave').textContent = 'Actualizar';
+
+    document.getElementById('m_temperatura').value = row.dataset.temperatura;
+    document.getElementById('m_humedad').value = row.dataset.humedad;
+    document.getElementById('m_humedad_suelo').value = row.dataset.humedadSuelo;
+    document.getElementById('m_calidad_aire').value = row.dataset.calidadAire;
+    document.getElementById('m_lluvia').value = row.dataset.lluvia;
+    document.getElementById('m_fecha_hora').value = row.dataset.fechaHora.replace(' ', 'T');
+    document.getElementById('m_dispositivo').value = row.dataset.idDispositivo;
+
+    document.getElementById('modalOverlay').classList.add('active');
+}
+
+function cerrarModal() {
+    document.getElementById('modalOverlay').classList.remove('active');
+}
+
+function limpiarFormulario() {
+    document.getElementById('m_temperatura').value = '';
+    document.getElementById('m_humedad').value = '';
+    document.getElementById('m_humedad_suelo').value = '';
+    document.getElementById('m_calidad_aire').value = '';
+    document.getElementById('m_lluvia').value = '';
+    document.getElementById('m_fecha_hora').value = '';
+    document.getElementById('m_dispositivo').value = '';
+}
+
+function confirmarEliminar(btn) {
+    if (!confirm('¿Estás seguro de eliminar esta medición?')) {
+        return;
+    }
+    var row = btn.closest('.row-medicion');
+    var form = document.getElementById('deleteForm');
+    form.action = 'index.php?accion=eliminar&id=' + row.dataset.id;
+    form.submit();
+}
+
+document.getElementById('modalOverlay').addEventListener('click', function(e) {
+    if (e.target === this) {
+        cerrarModal();
+    }
+});
+</script>
 </body>
 </html>

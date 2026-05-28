@@ -26,7 +26,7 @@
 
 .sidebar-brand .brand-mark {
     color: #f5dce8;
-    font-size: 1.2rem;
+    font-size: 1.3rem;
 }
 
 .sidebar-nav {
@@ -46,7 +46,7 @@
     color: rgba(255, 255, 255, 0.7);
     text-decoration: none;
     font-weight: 500;
-    font-size: 0.92rem;
+    font-size: 1rem;
     transition: background 0.2s ease, color 0.2s ease;
 }
 
@@ -69,7 +69,7 @@
 
 .sidebar-user {
     color: rgba(255, 255, 255, 0.6);
-    font-size: 0.82rem;
+    font-size: 0.92rem;
     margin-bottom: 8px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -80,7 +80,7 @@
     display: block;
     color: rgba(255, 200, 200, 0.7);
     text-decoration: none;
-    font-size: 0.85rem;
+    font-size: 0.92rem;
     font-weight: 600;
     transition: color 0.2s ease;
 }

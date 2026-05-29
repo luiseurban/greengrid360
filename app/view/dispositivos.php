@@ -28,6 +28,9 @@ $pageSeparator = $baseQuery !== '' ? '&' : '';
             <a href="index.php?accion=dispositivos" class="sidebar-link active">
                 Dispositivos
             </a>
+            <a href="index.php?accion=alertas" class="sidebar-link">
+                Alertas
+            </a>
             <a href="index.php?accion=home" class="sidebar-link">
                 Inicio
             </a>

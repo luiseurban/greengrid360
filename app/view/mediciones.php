@@ -36,10 +36,13 @@ $filtrosQ = http_build_query(array_filter([
             <a href="index.php?accion=listar" class="sidebar-link <?php echo $currentAction === 'listar' ? 'active' : ''; ?>">
                 Mediciones
             </a>
-            <a href="index.php?accion=dispositivos" class="sidebar-link">
-                Dispositivos
-            </a>
-            <a href="index.php?accion=home" class="sidebar-link">
+        <a href="index.php?accion=dispositivos" class="sidebar-link">
+            Dispositivos
+        </a>
+        <a href="index.php?accion=alertas" class="sidebar-link">
+            Alertas
+        </a>
+        <a href="index.php?accion=home" class="sidebar-link">
                 Inicio
             </a>
         </nav>

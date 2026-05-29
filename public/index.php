@@ -4,6 +4,7 @@ session_start();
 require_once(__DIR__ . '/../app/database/Database.php');
 require_once(__DIR__ . '/../app/controller/MedicionController.php');
 require_once(__DIR__ . '/../app/controller/Esp32Controller.php');
+require_once(__DIR__ . '/../app/controller/AlertaController.php');
 require_once(__DIR__ . '/../app/controller/AuthController.php');
 
 $accion = null;
@@ -108,6 +109,28 @@ try {
                 $controladorEsp->eliminar();
             } else {
                 header('Location: index.php?accion=dispositivos');
+                exit;
+            }
+            break;
+
+        case 'alertas':
+        case 'crear-alerta':
+        case 'editar-alerta':
+        case 'eliminar-alerta':
+            $auth->requireAuth();
+
+            $controladorAlerta = new AlertaController($conexion);
+
+            if ($accion === 'alertas') {
+                $controladorAlerta->listar();
+            } elseif ($accion === 'crear-alerta' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+                $controladorAlerta->crear();
+            } elseif ($accion === 'editar-alerta' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+                $controladorAlerta->actualizar();
+            } elseif ($accion === 'eliminar-alerta' && $_SERVER['REQUEST_METHOD'] === 'POST') {
+                $controladorAlerta->eliminar();
+            } else {
+                header('Location: index.php?accion=alertas');
                 exit;
             }
             break;

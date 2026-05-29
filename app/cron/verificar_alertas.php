@@ -10,7 +10,11 @@ $mailer = new Mailer();
 
 $dispositivos = $conexion->query("SELECT id_dispositivo, ubicacion FROM esp32");
 
+echo "=== Verificando alertas ===\n";
+
 while ($disp = $dispositivos->fetch_assoc()) {
+    echo "Dispositivo #{$disp['id_dispositivo']} ({$disp['ubicacion']}): ";
+
     $medicion = $conexion->query(
         "SELECT temperatura, humedad, humedad_suelo, calidad_aire, lluvia
          FROM medicion_ambiental
@@ -18,9 +22,19 @@ while ($disp = $dispositivos->fetch_assoc()) {
          ORDER BY fecha_hora DESC LIMIT 1"
     )->fetch_assoc();
 
-    if (!$medicion) continue;
+    if (!$medicion) {
+        echo "sin mediciones\n";
+        continue;
+    }
 
     $alertas = $alertaModel->obtenerPorDispositivo($disp['id_dispositivo']);
+
+    if (empty($alertas)) {
+        echo "sin alertas activas\n";
+        continue;
+    }
+
+    echo count($alertas) . " alerta(s)\n";
 
     foreach ($alertas as $alerta) {
         $valor = $medicion[$alerta['parametro']];
@@ -32,8 +46,13 @@ while ($disp = $dispositivos->fetch_assoc()) {
             $disparada = true;
         }
 
+        $paramLabel = str_replace('_', ' ', $alerta['parametro']);
+        $condLabel = $alerta['tipo_condicion'] === 'minimo' ? '<' : '>';
+
+        echo "  - {$paramLabel}: valor={$valor} {$condLabel} umbral={$alerta['valor_umbral']} -> "
+           . ($disparada ? "DISPARADA" : "OK") . "\n";
+
         if ($disparada) {
-            $paramLabel = str_replace('_', ' ', $alerta['parametro']);
             $condicion = $alerta['tipo_condicion'] === 'minimo' ? 'por debajo de' : 'por encima de';
             $asunto = "Alerta GreenGrid360 - {$paramLabel} en {$disp['ubicacion']}";
             $cuerpo = "
@@ -45,9 +64,20 @@ while ($disp = $dispositivos->fetch_assoc()) {
                 <br><p>GreenGrid 360 - Monitoreo ambiental</p>
             ";
 
-            $mailer->enviarAlerta($alerta['correo_destino'], $asunto, $cuerpo);
+            echo "    Enviando a: {$alerta['correo_destino']}... ";
+            if ($alertaModel->puedeEnviar($alerta['id_alerta'])) {
+                $enviado = $mailer->enviarAlerta($alerta['correo_destino'], $asunto, $cuerpo);
+                if ($enviado) {
+                    $alertaModel->registrarEnvio($alerta['id_alerta']);
+                }
+                echo ($enviado ? "OK" : "ERROR") . "\n";
+            } else {
+                echo "omitido (cooldown)\n";
+            }
         }
     }
 }
+
+echo "=== Fin ===\n";
 
 $db->cerrar();

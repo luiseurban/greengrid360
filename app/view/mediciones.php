@@ -27,6 +27,25 @@ $filtrosQ = http_build_query(array_filter([
     <link rel="stylesheet" href="../css/index.css">
 </head>
 <body class="dashboard-page">
+
+    <?php if (!empty($alertasDisparadas)): ?>
+    <div class="toast-container" id="toastContainer">
+        <?php foreach ($alertasDisparadas as $alerta): ?>
+        <div class="toast">
+            <span class="toast-icon">&#9888;</span>
+            <div class="toast-body">
+                <div class="toast-title">Alerta en <?php echo htmlspecialchars($alerta['ubicacion']); ?></div>
+                <div class="toast-msg">
+                    <?php echo htmlspecialchars($alerta['parametro']); ?>: <?php echo $alerta['valor']; ?>
+                    (<?php echo $alerta['condicion']; ?> <?php echo $alerta['umbral']; ?>)
+                </div>
+            </div>
+            <button class="toast-close" onclick="cerrarToast(this)" aria-label="Cerrar">&times;</button>
+        </div>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
+
     <aside class="dashboard-sidebar">
         <div class="sidebar-brand">
             <span class="brand-mark">GreenGrid 360</span>
@@ -481,6 +500,35 @@ $filtrosQ = http_build_query(array_filter([
 
 <script>
 var searchTimer = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    var toasts = document.querySelectorAll('.toast');
+    toasts.forEach(function(toast) {
+        setTimeout(function() {
+            eliminarToast(toast);
+        }, 5000);
+    });
+
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'index.php?accion=enviar-alertas', true);
+    xhr.send();
+});
+
+function cerrarToast(btn) {
+    eliminarToast(btn.closest('.toast'));
+}
+
+function eliminarToast(toast) {
+    if (!toast || toast.classList.contains('toast-hiding')) return;
+    toast.classList.add('toast-hiding');
+    setTimeout(function() {
+        toast.remove();
+        var container = document.getElementById('toastContainer');
+        if (container && container.children.length === 0) {
+            container.remove();
+        }
+    }, 300);
+}
 
 function buscarEnTiempoReal(input) {
     clearTimeout(searchTimer);

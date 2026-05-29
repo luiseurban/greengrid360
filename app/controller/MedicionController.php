@@ -3,9 +3,11 @@ require_once(__DIR__ . '/../model/MedicionAmbiental.php');
 
 class MedicionController {
     private $modelo;
+    private $conexion;
     
     public function __construct($conexion) {
         $this->modelo = new MedicionAmbiental($conexion);
+        $this->conexion = $conexion;
     }
     
     public function listar() {
@@ -26,8 +28,51 @@ class MedicionController {
         
         $stats = $this->calcularEstadisticas($todos);
         $totalPaginas = (int)ceil($total / $porPagina);
-        
+        $alertasDisparadas = $this->verificarAlertas();
+
         require(__DIR__ . '/../view/mediciones.php');
+    }
+
+    private function verificarAlertas() {
+        require_once(__DIR__ . '/../model/Alerta.php');
+        $alertaModel = new Alerta($this->conexion);
+        $resultado = [];
+
+        $dispositivos = $this->conexion->query("SELECT id_dispositivo, ubicacion FROM esp32");
+        while ($disp = $dispositivos->fetch_assoc()) {
+            $ultima = $this->conexion->query(
+                "SELECT temperatura, humedad, humedad_suelo, calidad_aire, lluvia
+                 FROM medicion_ambiental
+                 WHERE id_dispositivo = {$disp['id_dispositivo']}
+                 ORDER BY fecha_hora DESC LIMIT 1"
+            )->fetch_assoc();
+
+            if (!$ultima) continue;
+
+            $alertas = $alertaModel->obtenerPorDispositivo($disp['id_dispositivo']);
+            foreach ($alertas as $alerta) {
+                $valor = $ultima[$alerta['parametro']];
+                $disparada = false;
+
+                if ($alerta['tipo_condicion'] === 'minimo' && $valor < $alerta['valor_umbral']) {
+                    $disparada = true;
+                } elseif ($alerta['tipo_condicion'] === 'maximo' && $valor > $alerta['valor_umbral']) {
+                    $disparada = true;
+                }
+
+                if ($disparada) {
+                    $resultado[] = [
+                        'ubicacion' => $disp['ubicacion'],
+                        'parametro' => str_replace('_', ' ', $alerta['parametro']),
+                        'valor' => $valor,
+                        'condicion' => $alerta['tipo_condicion'] === 'minimo' ? 'por debajo de' : 'por encima de',
+                        'umbral' => $alerta['valor_umbral'],
+                    ];
+                }
+            }
+        }
+
+        return $resultado;
     }
 
     private function obtenerFiltros() {
@@ -202,6 +247,59 @@ class MedicionController {
             $error = "Error al eliminar la medición";
             require(__DIR__ . '/../view/error.php');
         }
+    }
+
+    public function enviarAlertas() {
+        session_write_close();
+        require_once(__DIR__ . '/../model/Alerta.php');
+        require_once(__DIR__ . '/../lib/Mailer.php');
+        $alertaModel = new Alerta($this->conexion);
+        $mailer = new Mailer();
+        $enviados = 0;
+
+        $dispositivos = $this->conexion->query("SELECT id_dispositivo, ubicacion FROM esp32");
+        while ($disp = $dispositivos->fetch_assoc()) {
+            $ultima = $this->conexion->query(
+                "SELECT temperatura, humedad, humedad_suelo, calidad_aire, lluvia
+                 FROM medicion_ambiental
+                 WHERE id_dispositivo = {$disp['id_dispositivo']}
+                 ORDER BY fecha_hora DESC LIMIT 1"
+            )->fetch_assoc();
+
+            if (!$ultima) continue;
+
+            $alertas = $alertaModel->obtenerPorDispositivo($disp['id_dispositivo']);
+            foreach ($alertas as $alerta) {
+                $valor = $ultima[$alerta['parametro']];
+                $disparada = false;
+
+                if ($alerta['tipo_condicion'] === 'minimo' && $valor < $alerta['valor_umbral']) {
+                    $disparada = true;
+                } elseif ($alerta['tipo_condicion'] === 'maximo' && $valor > $alerta['valor_umbral']) {
+                    $disparada = true;
+                }
+
+                if ($disparada && $alertaModel->puedeEnviar($alerta['id_alerta'])) {
+                    $paramLabel = str_replace('_', ' ', $alerta['parametro']);
+                    $condicion = $alerta['tipo_condicion'] === 'minimo' ? 'por debajo de' : 'por encima de';
+                    $asunto = "Alerta GreenGrid360 - {$paramLabel} en {$disp['ubicacion']}";
+                    $cuerpo = "
+                        <h2>Alerta GreenGrid 360</h2>
+                        <p><strong>Dispositivo:</strong> {$disp['ubicacion']}</p>
+                        <p><strong>Parametro:</strong> {$paramLabel}</p>
+                        <p><strong>Valor actual:</strong> {$valor}</p>
+                        <p><strong>Umbral:</strong> {$condicion} {$alerta['valor_umbral']}</p>
+                        <br><p>GreenGrid 360 - Monitoreo ambiental</p>
+                    ";
+                    if ($mailer->enviarAlerta($alerta['correo_destino'], $asunto, $cuerpo)) {
+                        $alertaModel->registrarEnvio($alerta['id_alerta']);
+                        $enviados++;
+                    }
+                }
+            }
+        }
+
+        echo json_encode(['enviados' => $enviados]);
     }
 
     private function aFloat($valor) {

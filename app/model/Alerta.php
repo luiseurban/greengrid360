@@ -105,13 +105,35 @@ class Alerta {
     }
 
     public function obtenerPorDispositivo($id_dispositivo) {
-        $sql = "SELECT id_alerta, parametro, tipo_condicion, valor_umbral, correo_destino, activo
+        $sql = "SELECT id_alerta, parametro, tipo_condicion, valor_umbral, correo_destino, activo,
+                       fecha_ultimo_envio
                 FROM alertas WHERE id_dispositivo = ? AND activo = 1";
         $stmt = $this->conexion->prepare($sql);
         $stmt->bind_param("i", $id_dispositivo);
         $stmt->execute();
         $resultado = $stmt->get_result();
         return $resultado->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public function puedeEnviar($id_alerta, $cooldownMinutos = 15) {
+        $sql = "SELECT CASE
+                    WHEN fecha_ultimo_envio IS NULL THEN 1
+                    WHEN TIMESTAMPDIFF(MINUTE, fecha_ultimo_envio, NOW()) >= ? THEN 1
+                    ELSE 0
+                END as puede
+                FROM alertas WHERE id_alerta = ?";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("ii", $cooldownMinutos, $id_alerta);
+        $stmt->execute();
+        $fila = $stmt->get_result()->fetch_assoc();
+        return (bool)($fila['puede'] ?? false);
+    }
+
+    public function registrarEnvio($id_alerta) {
+        $sql = "UPDATE alertas SET fecha_ultimo_envio = NOW() WHERE id_alerta = ?";
+        $stmt = $this->conexion->prepare($sql);
+        $stmt->bind_param("i", $id_alerta);
+        return $stmt->execute();
     }
 
     private function construirCondiciones($filtros) {

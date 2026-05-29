@@ -67,6 +67,7 @@ try {
         case 'crear':
         case 'editar':
         case 'eliminar':
+        case 'enviar-alertas':
             $auth->requireAuth();
 
             $controlador = new MedicionController($conexion);
@@ -85,6 +86,8 @@ try {
                 $controlador->actualizar();
             } elseif ($accion === 'eliminar' && $_SERVER['REQUEST_METHOD'] === 'POST') {
                 $controlador->eliminar();
+            } elseif ($accion === 'enviar-alertas') {
+                $controlador->enviarAlertas();
             } else {
                 header('Location: index.php?accion=listar');
                 exit;

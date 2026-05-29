@@ -283,12 +283,47 @@ class MedicionController {
                     $paramLabel = str_replace('_', ' ', $alerta['parametro']);
                     $condicion = $alerta['tipo_condicion'] === 'minimo' ? 'por debajo de' : 'por encima de';
                     $asunto = "Alerta GreenGrid360 - {$paramLabel} en {$disp['ubicacion']}";
+
+                    $historial = $this->conexion->query(
+                        "SELECT temperatura, humedad, humedad_suelo, calidad_aire, lluvia, fecha_hora
+                         FROM medicion_ambiental
+                         WHERE id_dispositivo = {$disp['id_dispositivo']}
+                         ORDER BY fecha_hora DESC LIMIT 5"
+                    )->fetch_all(MYSQLI_ASSOC);
+
+                    $filasHistorial = '';
+                    foreach ($historial as $h) {
+                        $filasHistorial .= "<tr>
+                            <td style='padding:6px 10px;border-bottom:1px solid #eee'>{$h['fecha_hora']}</td>
+                            <td style='padding:6px 10px;border-bottom:1px solid #eee'>{$h['temperatura']}</td>
+                            <td style='padding:6px 10px;border-bottom:1px solid #eee'>{$h['humedad']}</td>
+                            <td style='padding:6px 10px;border-bottom:1px solid #eee'>{$h['humedad_suelo']}</td>
+                            <td style='padding:6px 10px;border-bottom:1px solid #eee'>{$h['calidad_aire']}</td>
+                            <td style='padding:6px 10px;border-bottom:1px solid #eee'>{$h['lluvia']}</td>
+                        </tr>";
+                    }
+
                     $cuerpo = "
                         <h2>Alerta GreenGrid 360</h2>
                         <p><strong>Dispositivo:</strong> {$disp['ubicacion']}</p>
                         <p><strong>Parametro:</strong> {$paramLabel}</p>
                         <p><strong>Valor actual:</strong> {$valor}</p>
                         <p><strong>Umbral:</strong> {$condicion} {$alerta['valor_umbral']}</p>
+                        <br>
+                        <h3>Ultimos 5 registros</h3>
+                        <table style='border-collapse:collapse;width:100%;font-size:13px'>
+                            <thead>
+                                <tr style='background:#f8f0f5;text-align:left'>
+                                    <th style='padding:6px 10px;border-bottom:2px solid #d886b0'>Fecha/Hora</th>
+                                    <th style='padding:6px 10px;border-bottom:2px solid #d886b0'>Temp</th>
+                                    <th style='padding:6px 10px;border-bottom:2px solid #d886b0'>Hum</th>
+                                    <th style='padding:6px 10px;border-bottom:2px solid #d886b0'>H.Suelo</th>
+                                    <th style='padding:6px 10px;border-bottom:2px solid #d886b0'>Aire</th>
+                                    <th style='padding:6px 10px;border-bottom:2px solid #d886b0'>Lluvia</th>
+                                </tr>
+                            </thead>
+                            <tbody>{$filasHistorial}</tbody>
+                        </table>
                         <br><p>GreenGrid 360 - Monitoreo ambiental</p>
                     ";
                     if ($mailer->enviarAlerta($alerta['correo_destino'], $asunto, $cuerpo)) {

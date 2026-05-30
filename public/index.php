@@ -58,6 +58,10 @@ try {
             $auth->mostrarRegistro();
             break;
 
+        case 'manual':
+            require(__DIR__ . '/../app/view/manual.php');
+            break;
+
         case 'logout':
             $auth->cerrarSesion();
             break;

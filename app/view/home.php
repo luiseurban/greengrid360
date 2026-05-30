@@ -40,7 +40,7 @@ $has_session = isset($_SESSION['usuario']);
 
                 <div class="hero-actions">
                     <a class="btn btn-primary" href="index.php?accion=listar">Dashboard</a>
-                    <a class="btn btn-secondary" href="index.php?accion=login">Manual de usuario</a>
+                    <a class="btn btn-secondary" href="index.php?accion=manual">Manual de usuario</a>
                 </div>
 
                 <div class="hero-notes">
